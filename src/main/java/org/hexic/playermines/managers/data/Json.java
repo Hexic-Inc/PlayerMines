@@ -11,6 +11,7 @@ import java.util.Map;
 
 public class Json {
 
+
     File file;
     static Plugin pl;
 
@@ -115,7 +116,7 @@ public class Json {
     public void remove(String header){
         try{
             Reader reader = Files.newBufferedReader(file.toPath()); // Read the existing Json
-            Map<String, JsonObject> map = GSON.fromJson(reader,Map.class); // Convert the existing Json to a <ap
+            Map<String, JsonObject> map = GSON.fromJson(reader,Map.class); // Convert the existing Json to a map
             FileWriter writer = new FileWriter(file); // Create a file writer
             int[] dale = new int[2];
             Map<String,JsonObject> newMap = new LinkedHashMap<>(); // Temporary map to move all the data to

@@ -5,4 +5,5 @@ api-version: 1.16
 author: Hexic
 description: Untitled.
 commands:
-  PlayerMines:
+  PlayerMine:
+    aliases: pmine
