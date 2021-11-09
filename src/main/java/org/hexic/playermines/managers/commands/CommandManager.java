@@ -7,7 +7,11 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.hexic.playermines.commands.Create;
+import org.hexic.playermines.commands.Reset;
 import org.hexic.playermines.commands.Tp;
+import org.hexic.playermines.data.yml.LangConfig;
+import org.hexic.playermines.handlers.GuiHandler;
+import org.hexic.playermines.world.PlayerMine;
 
 import java.util.ArrayList;
 
@@ -18,6 +22,7 @@ public class CommandManager implements CommandExecutor {
     public CommandManager() {
         subcommands.add(new Create());
         subcommands.add(new Tp());
+        subcommands.add(new Reset());
     }
 
 
@@ -28,32 +33,39 @@ public class CommandManager implements CommandExecutor {
             Player p = (Player) sender;
 
             if (args.length > 0) {
-                for (int i = 0; i < getSubcommands().size(); i++) {
-                    if (args[0].equalsIgnoreCase(getSubcommands().get(i).getName())) {
-                        getSubcommands().get(i).perform(p, args);
+                if(args[0].equalsIgnoreCase("help")){
+                    p.sendMessage("--------------------------------");
+                    for (int i = 0; i < subcommands.size(); i++) {
+                        p.sendMessage(subcommands.get(i).getName() + " - " + subcommands.get(i).getDescription());
+                    }
+                    p.sendMessage("--------------------------------");
+                }
+                for (int i = 0; i < subcommands.size(); i++) {
+                    if (args[0].equalsIgnoreCase(subcommands.get(i).getName())) {
+                        subcommands.get(i).perform(p, args);
                     }
                 }
             } else {
-                p.sendMessage("--------------------------------");
-                for (int i = 0; i < getSubcommands().size(); i++) {
-                    p.sendMessage(getSubcommands().get(i).getSyntax() + " - " + getSubcommands().get(i).getDescription());
+                if(new PlayerMine(p).hasMine()){
+                    p.openInventory(new GuiHandler("Menu",p).getGui());
+                } else {
+                    p.sendMessage(new LangConfig(p).getPrefixValue("General-Messages","No_Mine", "&cYou don't own a mine!"));
                 }
-                p.sendMessage("--------------------------------");
             }
 
         } else if (sender instanceof ConsoleCommandSender) {
             Player p = (Player) sender;
 
             if (args.length > 0) {
-                for (int i = 0; i < getSubcommands().size(); i++) {
-                    if (args[0].equalsIgnoreCase(getSubcommands().get(i).getName())) {
-                        getSubcommands().get(i).perform(p, args);
+                for (int i = 0; i < subcommands.size(); i++) {
+                    if (args[0].equalsIgnoreCase(subcommands.get(i).getName())) {
+                        subcommands.get(i).perform(p, args);
                     }
                 }
             } else {
                 p.sendMessage("--------------------------------");
-                for (int i = 0; i < getSubcommands().size(); i++) {
-                    p.sendMessage(getSubcommands().get(i).getSyntax() + " - " + getSubcommands().get(i).getDescription());
+                for (int i = 0; i < subcommands.size(); i++) {
+                    p.sendMessage(subcommands.get(i).getName() + " - " + subcommands.get(i).getDescription());
                 }
                 p.sendMessage("--------------------------------");
             }
@@ -63,9 +75,6 @@ public class CommandManager implements CommandExecutor {
         return true;
     }
 
-    public ArrayList<SubCommand> getSubcommands() {
-        return subcommands;
-    }
 
 }
 

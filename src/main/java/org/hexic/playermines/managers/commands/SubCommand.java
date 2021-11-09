@@ -10,8 +10,6 @@ public abstract class SubCommand {
     //ex. "This is a subcommand that let's a shark eat someone"
     public abstract String getDescription();
 
-    public abstract String getSyntax();
-
     //code for the subcommand
     public abstract void perform(Player player, String args[]);
 
