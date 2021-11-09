@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: lilypad.client.connect:api:0.0.1-SNAPSHOT">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/lilypad/client/connect/api/0.0.1-SNAPSHOT/api-0.0.1-20170415.161324-1.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/lilypad/client/connect/api/0.0.1-SNAPSHOT/api-0.0.1-20170415.161324-1-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/lilypad/client/connect/api/0.0.1-SNAPSHOT/api-0.0.1-20170415.161324-1-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

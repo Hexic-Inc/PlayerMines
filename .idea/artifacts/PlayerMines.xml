@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="PlayerMines">
+    <output-path>C:/PBuilds</output-path>
+    <root id="archive" name="PlayerMines.jar">
+      <element id="module-output" name="PlayerMines" />
+    </root>
+  </artifact>
+</component>
