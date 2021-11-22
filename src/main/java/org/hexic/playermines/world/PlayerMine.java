@@ -196,6 +196,9 @@ public class PlayerMine {
         return Integer.parseInt(config.getSectionValue("Enchant_Caps",upgradeAsString(upgrade)));
     }
 
+    public int getResetTime(){
+        return (int) runMath(config.getSectionValue("Enchant_Triggered", "Regen_Time"), getUpgradeLevel(Upgrade.REGEN_TIME));
+    }
 
     /**
      * Get the upgrade as a YML supported string.
@@ -751,6 +754,7 @@ public class PlayerMine {
         int locY = Integer.parseInt(split[2]);
         return new Location(getMineWorld(),xAsCoord(mineX) + locX, locZ, yAsCoord(mineY) - locY);
     }
+
 
     /**
      *

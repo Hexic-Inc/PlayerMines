@@ -7,6 +7,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType;
 import org.hexic.playermines.handlers.ActionHandler;
 import org.hexic.playermines.handlers.GuiHandler;
+import org.hexic.playermines.handlers.GuiHolder;
 
 import java.util.Objects;
 
@@ -14,7 +15,7 @@ public class GuiClick implements Listener {
 
     @EventHandler
     public void guiClick(InventoryClickEvent e){
-        if(e.getCurrentItem() != null && new GuiHandler().guiExists(Objects.requireNonNull(e.getClickedInventory()), (Player) e.getWhoClicked())){
+        if(e.getInventory().getHolder() instanceof GuiHolder){
             e.setCancelled(true);
             int count = 1;
             ActionHandler act = new ActionHandler(new GuiHandler().getAction(e.getCurrentItem(),(Player) e.getWhoClicked()));

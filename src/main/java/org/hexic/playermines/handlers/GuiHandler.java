@@ -1,5 +1,6 @@
 package org.hexic.playermines.handlers;
 
+import me.lucko.helper.menu.Gui;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -27,9 +28,9 @@ public class GuiHandler {
         for(String key : config.getKeys()){
             if(key.toLowerCase().contains(inventory.toLowerCase()) && key.toLowerCase().contains("gui")) {
                 if(config.getInt(key +  ".Size") == 5){
-                    inv = Bukkit.createInventory(null, InventoryType.HOPPER,  translate( config.getValue(key + ".Display_Name")));
+                    inv = Bukkit.createInventory(new GuiHolder(), InventoryType.HOPPER,  translate( config.getValue(key + ".Display_Name")));
                 } else {
-                    inv = Bukkit.createInventory(null, config.getInt(key +  ".Size"), translate(config.getValue(key + ".Display_Name")));
+                    inv = Bukkit.createInventory(new GuiHolder(), config.getInt(key +  ".Size"), translate(config.getValue(key + ".Display_Name")));
                 }
                 for (int i = 0; i < inv.getSize(); i++) {
                     tempItem = trueItemStack(getItemString(i, convertContents(config.getValue(key + ".Contents"))));

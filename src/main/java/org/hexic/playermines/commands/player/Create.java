@@ -1,4 +1,4 @@
-package org.hexic.playermines.commands;
+package org.hexic.playermines.commands.player;
 
 import org.bukkit.entity.Player;
 import org.hexic.playermines.data.yml.LangConfig;

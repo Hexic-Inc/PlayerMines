@@ -29,6 +29,7 @@ public class PlayerMines extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        initalizer.initAll();
         if(PlayerMine.getMineWorld() != null){
             Bukkit.getWorld(PlayerMine.getMineWorld().getName()).save();
         }

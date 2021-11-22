@@ -11,6 +11,7 @@ import org.hexic.playermines.data.yml.GuiConfig;
 import org.hexic.playermines.data.yml.MineCrateConfig;
 import org.hexic.playermines.data.yml.SellPricesConfig;
 import org.hexic.playermines.data.yml.YmlConfig;
+import org.hexic.playermines.handlers.CoolDownHandler;
 import org.hexic.playermines.listeners.GuiClick;
 import org.hexic.playermines.listeners.MineCrate;
 import org.hexic.playermines.listeners.MineReset;
@@ -39,6 +40,7 @@ public class Initalizer {
     private final DataManager dataManager;
     private static Economy econ = null;
     private static Permission perms = null;
+    private CoolDownHandler coolDownHandler;
 
 
     public Initalizer(JavaPlugin plugin){
@@ -52,6 +54,8 @@ public class Initalizer {
 
     public Permission getPerms() {return perms;}
 
+    public CoolDownHandler getCoolDownHandler(){return coolDownHandler;}
+
     public void initAll(){
         initEcon();
         initPerms();
@@ -59,6 +63,11 @@ public class Initalizer {
         initListeners();
         initCommands();
         initWorld();
+        loadCoolDownHandler();
+    }
+
+    public void loadCoolDownHandler(){
+        coolDownHandler = new CoolDownHandler(plugin);
     }
 
     private void initWorld(){
@@ -75,10 +84,16 @@ public class Initalizer {
         getServer().getPluginManager().registerEvents(new MineReset(),plugin);
         getServer().getPluginManager().registerEvents(new GuiClick(), plugin);
         getServer().getPluginManager().registerEvents(new MineCrate(), plugin);
-        /*Reflections reflections = new Reflections(new ConfigurationBuilder()
-                .setUrls(ClasspathHelper.forPackage(getClass().getPackage().getName() + ".listeners")));
-       Set<Class<? extends Listener>> sub = reflections.getSubTypesOf(Listener.class);
-        for (Class<? extends Listener> aClass : sub) {
+        /*for(Class<?> clazz : new Reflections(plugin.getClass().getPackage().getName() + ".listeners").getSubTypesOf(Listener.class) ){
+            try{
+                Listener listener = (Listener) clazz.getDeclaredConstructor().newInstance();
+                getServer().getPluginManager().registerEvents(listener, plugin);
+
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e){
+                e.printStackTrace();
+            }
+        }
+        /*for (Class<? extends Listener> aClass : sub) {
             Bukkit.getConsoleSender().sendMessage(aClass.getTypeName());
         }*/
     }
