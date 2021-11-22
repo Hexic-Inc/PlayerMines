@@ -29,7 +29,7 @@ public class MineCrateConfig {
     }
 
     public Material getMaterial(){
-        return Material.getMaterial(config.get("MineCrate" +".Material").toString().toUpperCase());
+        return Material.valueOf(config.get("MineCrate" +".Material").toString().toUpperCase());
     }
 
     public void createMaterial(){

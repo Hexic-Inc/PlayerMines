@@ -1,6 +1,7 @@
 package org.hexic.playermines.handlers;
 
 import me.drawethree.ultraprisoncore.UltraPrisonCore;
+import me.drawethree.ultraprisoncore.api.enums.ReceiveCause;
 import me.drawethree.ultraprisoncore.gems.api.UltraPrisonGemsAPI;
 import me.drawethree.ultraprisoncore.tokens.api.UltraPrisonTokensAPI;
 import org.bukkit.Bukkit;
@@ -49,10 +50,10 @@ public class MineCrateHandler {
                         }
                     } else if (mineCrateConfig.getValue(section, "Type").contains("gems")) {
                         UltraPrisonGemsAPI ultraPrisonGemsAPI = UltraPrisonCore.getInstance().getGems().getApi();
-                        ultraPrisonGemsAPI.addGems(player, Integer.parseInt(mineCrateConfig.getValue(section, "Action")));
+                        ultraPrisonGemsAPI.addGems(player, Integer.parseInt(mineCrateConfig.getValue(section, "Action")), ReceiveCause.GIVE);
                     } else if (mineCrateConfig.getValue(section, "Type").contains("tokens")) {
                         UltraPrisonTokensAPI ultraPrisonTokensAPI = UltraPrisonCore.getInstance().getTokens().getApi();
-                        ultraPrisonTokensAPI.addTokens(player, Integer.parseInt(mineCrateConfig.getValue(section, "Action")));
+                        ultraPrisonTokensAPI.addTokens(player, Integer.parseInt(mineCrateConfig.getValue(section, "Action")), ReceiveCause.GIVE);
                     } else if (mineCrateConfig.getValue(section, "Type").contains("dollars")) {
                         PlayerMines.getInitalizer().getEcon().depositPlayer(player, Integer.parseInt(mineCrateConfig.getValue(section, "Action")));
                     }

@@ -70,15 +70,17 @@ public class GuiHandler {
         for(String key : config.getKeys()){
             if(key.toLowerCase().contains("gui")){
                 ItemStack[] gui2 = new GuiHandler(key,player).getGui().getContents().clone();
-                for(int i =0; i < gui2.length; i++){
-                    ItemStack itemStack = gui2[i];
-                    if(itemStack.hasItemMeta()) {
-                        itemStack.setItemMeta(gui1[i].getItemMeta());
+                if(inventory.getSize() == gui2.length) {
+                    for (int i = 0; i < gui2.length; i++) {
+                        ItemStack itemStack = gui2[i];
+                        if (itemStack.hasItemMeta()) {
+                            itemStack.setItemMeta(gui1[i].getItemMeta());
+                        }
+                        gui2[i] = itemStack;
                     }
-                    gui2[i] = itemStack;
-                }
-                if(Arrays.equals(gui2, gui1)){
-                    return true;
+                    if (Arrays.equals(gui2, gui1)) {
+                        return true;
+                    }
                 }
             }
         }

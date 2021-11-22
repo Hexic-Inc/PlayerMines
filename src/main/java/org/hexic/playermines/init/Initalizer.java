@@ -6,8 +6,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.checkerframework.framework.qual.SubtypeOf;
 import org.hexic.playermines.data.yml.GuiConfig;
 import org.hexic.playermines.data.yml.MineCrateConfig;
+import org.hexic.playermines.data.yml.SellPricesConfig;
 import org.hexic.playermines.data.yml.YmlConfig;
 import org.hexic.playermines.listeners.GuiClick;
 import org.hexic.playermines.listeners.MineCrate;
@@ -15,9 +17,18 @@ import org.hexic.playermines.listeners.MineReset;
 import org.hexic.playermines.managers.commands.CommandManager;
 import org.hexic.playermines.managers.data.DataManager;
 import org.hexic.playermines.world.PlayerMine;
+import org.reflections.Reflections;
+import org.reflections.scanners.ResourcesScanner;
+import org.reflections.scanners.SubTypesScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
+import org.reflections.util.FilterBuilder;
 
 
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import static org.bukkit.Bukkit.getServer;
@@ -64,7 +75,12 @@ public class Initalizer {
         getServer().getPluginManager().registerEvents(new MineReset(),plugin);
         getServer().getPluginManager().registerEvents(new GuiClick(), plugin);
         getServer().getPluginManager().registerEvents(new MineCrate(), plugin);
-
+        /*Reflections reflections = new Reflections(new ConfigurationBuilder()
+                .setUrls(ClasspathHelper.forPackage(getClass().getPackage().getName() + ".listeners")));
+       Set<Class<? extends Listener>> sub = reflections.getSubTypesOf(Listener.class);
+        for (Class<? extends Listener> aClass : sub) {
+            Bukkit.getConsoleSender().sendMessage(aClass.getTypeName());
+        }*/
     }
 
     private void initCommands(){
@@ -72,11 +88,12 @@ public class Initalizer {
     }
 
     private void initData(){
-        //if(!getDataFolder().exists()){
+        if(!plugin.getDataFolder().exists()){
         new YmlConfig().createConfigs();
         new GuiConfig().createConfig();
         new MineCrateConfig().createConfig();
-        // }
+        new SellPricesConfig().createDefaultBlocks();
+        }
     }
 
     private boolean initPerms(){

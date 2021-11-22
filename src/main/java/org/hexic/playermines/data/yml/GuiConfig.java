@@ -58,16 +58,24 @@ public class GuiConfig {
         createUpgradeFinder();
         createSize();
         createRegen();
+        createBlocksGui();
     }
 
-
+    private void createBlocksGui(){
+        String section = "Blocks-Gui";
+        config.createSection(section);
+        //Full lava slot block
+        config.setListValue(section, "Display_Name", "&4Blocks");
+        config.setListValue(section, "Size", 56);
+        config.setListValue(section, "Contents", "[{1,x;$blank}, {9,x;$blank}, {6,x;$blank}, {x,1;$blank}");
+    }
 
     private void createUpgradeGui(){
         String section = "Upgrade-Gui";
         config.createSection(section);
         //Full lava slot block
         config.setListValue(section, "Display_Name", "&4Upgrades");
-        config.setListValue(section, "Size", 45);
+        config.setListValue(section, "Size", 36);
         config.setListValue(section, "Contents", "[{2,3;$gem_drops}, {2,4;$minecrate_finder}, {2,5;$etoken_finder}, {2,6;$mine_multiplier}, {2,7;$regen_time}, " +
                 "{3,3;$size}, {3,4;$upgrade_finder}, {3,5;$tax_price}, {3,6;$rent_price}, {3,7;$berserk}," +
                 "{x,x;$blank}]");
