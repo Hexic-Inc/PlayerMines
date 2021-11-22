@@ -1,6 +1,7 @@
 package org.hexic.playermines;
 
 
+import me.drawethree.ultraprisoncore.UltraPrisonCore;
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -29,10 +30,10 @@ public class PlayerMines extends JavaPlugin {
 
     @Override
     public void onDisable() {
-        initalizer.initAll();
         if(PlayerMine.getMineWorld() != null){
             Bukkit.getWorld(PlayerMine.getMineWorld().getName()).save();
         }
+
     }
 
     public static Initalizer getInitalizer(){return initalizer;}

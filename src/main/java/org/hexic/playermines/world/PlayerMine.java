@@ -103,6 +103,7 @@ public class PlayerMine {
         this.econ = PlayerMines.getInitalizer().getEcon();
         this.config = new YmlConfig();
         this.ownerJson = new PlayerJson(uuid);
+        this.ownerPlayer = Bukkit.getOfflinePlayer(player.getUniqueId());
         String[] split = uuid.split("-");
         this.mineName = "mine" + "-" + split[split.length-1];
     }
@@ -283,7 +284,7 @@ public class PlayerMine {
     /**
      * Remove the supported currency from the players account.
      * @param upgrade Upgrade that is being selected.
-     * @param level Amount to add to the upgrade leve.
+     * @param level Amount to add to the upgrade level.
      */
     private void runUpgradeCost(Upgrade upgrade, int level){
         String string = config.getSectionValue("Enchant_Costs", upgradeAsString(upgrade));
@@ -577,7 +578,14 @@ public class PlayerMine {
      * @param player Player to teleport.
      */
     public void teleport(Player player) {
-        player.teleport(mineLocation());
+        Location mineLocation = mineLocation();
+        Map<String, String> data = ownerJson.getData();
+        String[] split = data.get("TP-Location").split(",");
+        int x = Integer.parseInt(split[0]);
+        int y = Integer.parseInt(split[1]);
+        int z = Integer.parseInt(split[2]);
+        Location tpLocation = new Location(mineLocation.getWorld(), mineLocation.getX() + x, y, mineLocation.getZ() + z);
+        player.teleport(tpLocation);
         setBorder(player);
     }
 
@@ -714,6 +722,7 @@ public class PlayerMine {
         data.put("Public", "false");
         data.put("Mine-Contents", config.getPmineContents());
         data.put("Mine-Size", config.getMineCoords());
+        data.put("TP-Location", config.getTPLocation());
         ownerJson.setValue(data);
     }
 

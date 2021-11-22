@@ -48,6 +48,7 @@ public class SellPricesConfig {
         createBlocksAndPrice(Material.POLISHED_DIORITE, 100, 0);
         createBlocksAndPrice(Material.GRANITE, 100, 0);
         createBlocksAndPrice(Material.POLISHED_GRANITE, 100, 0);
+        createBlocksAndPrice(Material.END_STONE, 10000, 1);
 
     }
 

@@ -32,6 +32,7 @@ public class YmlConfig {
         config.setListValue(section,"Area-Size","300");
         config.setListValue(section,"Default-Schem", "default");
         config.setListValue(section,"Mine-Coords", "125,100,125; 175,50,175");
+        config.setListValue(section, "TP-Location", "149,101,114");
         config.setListValue(section,"Mine-Contents","[99;stone, 1;end_stone]");
         config.setListValue(section,"Mine-Flags", "");
         config.setListValue(section,"Global-Flags", "");
@@ -102,6 +103,8 @@ public class YmlConfig {
         }
         return tempMap;
     }
+
+    public String getTPLocation(){return config.getString("general-settings" + ".TP-Location");}
 
     public String getSectionValue(String section, String key){
         return config.getString(section + "." + key);

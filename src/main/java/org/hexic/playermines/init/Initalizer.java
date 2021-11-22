@@ -104,10 +104,10 @@ public class Initalizer {
 
     private void initData(){
         if(!plugin.getDataFolder().exists()){
-        new YmlConfig().createConfigs();
-        new GuiConfig().createConfig();
-        new MineCrateConfig().createConfig();
-        new SellPricesConfig().createDefaultBlocks();
+            new YmlConfig().createConfigs();
+            new GuiConfig().createConfig();
+            new MineCrateConfig().createConfig();
+            new SellPricesConfig().createDefaultBlocks();
         }
     }
 

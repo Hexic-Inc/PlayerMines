@@ -65,8 +65,8 @@ public class GuiConfig {
         String section = "Blocks-Gui";
         config.createSection(section);
         //Full lava slot block
-        config.setListValue(section, "Display_Name", "&4Blocks");
-        config.setListValue(section, "Size", 56);
+        config.setListValue(section, "Display_Name", "&8Mine Contents");
+        config.setListValue(section, "Size", 54);
         config.setListValue(section, "Contents", "[{1,x;$blank}, {9,x;$blank}, {6,x;$blank}, {x,1;$blank}");
     }
 
@@ -133,7 +133,7 @@ public class GuiConfig {
         config.setListValue(section, "Item", "stone");
         config.setListValue(section, "Display_Name", "&8Change Blocks in Mine");
         config.setListValue(section, "Lore", "");
-        config.setListValue(section, "Action", "");
+        config.setListValue(section, "Action", "gui;blocks");
     }
 
     private void createSettings(){
