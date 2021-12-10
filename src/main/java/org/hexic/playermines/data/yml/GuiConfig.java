@@ -67,7 +67,7 @@ public class GuiConfig {
         //Full lava slot block
         config.setListValue(section, "Display_Name", "&8Mine Contents");
         config.setListValue(section, "Size", 54);
-        config.setListValue(section, "Contents", "[{1,x;$blank}, {9,x;$blank}, {6,x;$blank}, {x,1;$blank}");
+        config.setListValue(section, "Contents", "[{1,x;$blank}, {x,9;$blank}, {6,x;$blank}, {x,1;$blank}");
     }
 
     private void createUpgradeGui(){

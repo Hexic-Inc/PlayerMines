@@ -89,7 +89,26 @@ public class SellPricesConfig {
         Map<Material,Double> hashMap = new HashMap<>();
         list.forEach(header -> {
             if(!header.toLowerCase().contains("default")){
-                hashMap.put(Material.valueOf(header.toUpperCase()), Double.parseDouble( config.getString(header + ".Price")));
+                if(config.getString(header + ".Price").toLowerCase().contains("default")){
+                    hashMap.put(Material.valueOf(header.toUpperCase()), Double.parseDouble(config.getString("Default" + ".Price")));
+                }else {
+                    hashMap.put(Material.valueOf(header.toUpperCase()), Double.parseDouble(config.getString(header + ".Price")));
+                }
+            }
+        });
+        return hashMap;
+    }
+
+    public Map<Material,Double> getBlocksWithChances(){
+        Set<String> list = config.getKeys();
+        Map<Material,Double> hashMap = new HashMap<>();
+        list.forEach(header -> {
+            if(!header.toLowerCase().contains("default")){
+                if(config.contains(header + ".Locked")){
+                    hashMap.put(Material.valueOf(header.toUpperCase()), Double.parseDouble(config.getString(header + ".Locked")));
+                } else {
+                    hashMap.put(Material.valueOf(header.toUpperCase()), 0.0);
+                }
             }
         });
         return hashMap;

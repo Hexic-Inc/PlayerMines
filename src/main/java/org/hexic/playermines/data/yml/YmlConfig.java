@@ -31,11 +31,11 @@ public class YmlConfig {
         config.setListValue(section,"World-Name", "pmine");
         config.setListValue(section,"Area-Size","300");
         config.setListValue(section,"Default-Schem", "default");
-        config.setListValue(section,"Mine-Coords", "125,100,125; 175,50,175");
+        config.setListValue(section,"Mine-Cords", "125,100,125; 175,50,175");
         config.setListValue(section, "TP-Location", "149,101,114");
         config.setListValue(section,"Mine-Contents","[99;stone, 1;end_stone]");
-        config.setListValue(section,"Mine-Flags", "");
-        config.setListValue(section,"Global-Flags", "");
+        config.setListValue(section,"Mine-Flags", "{block-break;allow}, {block-place;deny}");
+        config.setListValue(section,"Global-Flags", "{block-break;deny}, {chorus-fruit-teleport;deny}, {mob-spawning;deny}, {enderpearl;deny}, {block-place;deny}, {natural-hunger-drain;deny}");
     }
 
     private void createCost(){
@@ -118,7 +118,69 @@ public class YmlConfig {
 
     public String getDefaultSchem(){return config.getString("general-settings" + ".Default-Schem");}
 
-    public String getMineCoords(){return config.getString("general-settings" + ".Mine-Coords");}
+    public String getMineCords(){return config.getString("general-settings" + ".Mine-Cords");}
+
+    public Map<String, Boolean> getGlobalRegionFlags(){
+       String flags = config.getString("general-settings.Global-Flags");
+       String temp = flags;
+       if(flags.contains(" ")){
+           temp = flags.replace(" ", "");
+       }
+        String[] split = new String[1];
+        if(flags.contains(",")){
+            split = temp.split(",");
+        } else {
+            split[0] = flags;
+        }
+       Map<String, Boolean> flagMap = new HashMap<>();
+       String temp1;
+       boolean bool;
+       String[] split2;
+        for (String s : split) {
+            temp1 = s;
+            if (temp1.contains("{")) {
+                temp1 = temp1.replace("{", "");
+            }
+            if (temp1.contains("}")) {
+                temp1 = temp1.replace("}", "");
+            }
+            split2 = temp1.split(";");
+            bool = split2[1].toLowerCase().contains("allow");
+            flagMap.put(split2[0], bool);
+        }
+       return flagMap;
+    }
+
+    public Map<String, Boolean> getMineRegionFlags(){
+        String flags = config.getString("general-settings.Mine-Flags");
+        String temp = flags;
+        if(flags.contains(" ")){
+            temp = flags.replace(" ", "");
+        }
+        String[] split = new String[1];
+        if(flags.contains(",")){
+            split = temp.split(",");
+        } else {
+            split[0] = flags;
+        }
+        Map<String, Boolean> flagMap = new HashMap<>();
+        String temp1;
+        boolean bool;
+        String[] split2;
+        for (String s : split) {
+            temp1 = s;
+            if (temp1.contains("{")) {
+                temp1 = temp1.replace("{", "");
+            }
+            if (temp1.contains("}")) {
+                temp1 = temp1.replace("}", "");
+            }
+            split2 = temp1.split(";");
+            bool = split2[1].toLowerCase().contains("allow");
+            flagMap.put(split2[0], bool);
+        }
+        return flagMap;
+    }
 
 
 }

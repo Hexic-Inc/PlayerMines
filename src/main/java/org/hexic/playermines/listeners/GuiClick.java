@@ -17,12 +17,8 @@ public class GuiClick implements Listener {
     public void guiClick(InventoryClickEvent e){
         if(e.getInventory().getHolder() instanceof GuiHolder){
             e.setCancelled(true);
-            int count = 1;
             ActionHandler act = new ActionHandler(new GuiHandler().getAction(e.getCurrentItem(),(Player) e.getWhoClicked()));
-            if(e.getClick().isRightClick() && e.getClick().isShiftClick()){
-                count = 10;
-            }
-            act.doAction((Player) e.getWhoClicked(), count);
+            act.doAction(e);
         }
     }
 }

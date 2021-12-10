@@ -4,22 +4,27 @@ import me.lucko.helper.menu.Gui;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.hexic.playermines.data.yml.GuiConfig;
+import org.hexic.playermines.data.yml.SellPricesConfig;
 import org.hexic.playermines.world.PlayerMine;
 import org.hexic.playermines.world.Upgrade;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 public class GuiHandler {
     private Inventory inv;
     private GuiConfig config;
     private Player player;
+    private ArrayList<Inventory> pages = new ArrayList<Inventory>();
 
     public GuiHandler(String inventory, Player player){
         this.player = player;
@@ -93,15 +98,17 @@ public class GuiHandler {
         for(String key : config.getKeys()){
             if(key.toLowerCase().contains("gui")){
                 ItemStack[] gui2 = new GuiHandler(key,player).getGui().getContents().clone();
-                for(int i =0; i < gui2.length; i++){
-                    ItemStack itemStack = gui2[i];
-                    if(itemStack.hasItemMeta()) {
-                        itemStack.setItemMeta(gui1[i].getItemMeta());
+                for(int i =0; i < gui2.length; i++) {
+                    if (gui1[i].getType() != Material.AIR) {
+                        ItemStack itemStack = gui2[i];
+                        if (gui1[i].hasItemMeta()) {
+                            itemStack.setItemMeta(gui1[i].getItemMeta());
+                        }
+                        gui2[i] = itemStack;
                     }
-                    gui2[i] = itemStack;
-                }
-                if(Arrays.equals(gui2, gui1)){
-                   return new GuiHandler(key,player).getGui();
+                    if (Arrays.equals(gui2, gui1)) {
+                        return new GuiHandler(key, player).getGui();
+                    }
                 }
             }
         }
@@ -123,7 +130,7 @@ public class GuiHandler {
                 return temp[1];// Return the block that should be there
             }
         }
-        return "barrier";
+        return "air";
     }
 
 
@@ -140,7 +147,7 @@ public class GuiHandler {
 
     private ItemStack getBlock(String blockSection){
         if(!config.getKeys().contains(blockSection)){
-            return new ItemStack(Material.BARRIER);
+            return new ItemStack(Material.AIR);
         }
         ItemStack item = new ItemStack(Material.valueOf(config.getValue(blockSection + ".Item").toUpperCase()));
         ItemMeta itemMeta = item.getItemMeta();
@@ -225,6 +232,31 @@ public class GuiHandler {
             }
         }
         return trueLocations;
+    }
+
+    public ArrayList<Inventory> fillGuiWithBlocks(){
+        Inventory inventory = new GuiHandler("Blocks",player).getGui();
+        SellPricesConfig sellPricesConfig = new SellPricesConfig();
+        Map<Material,Double> map = sellPricesConfig.getBlocksWithPrices();
+        for (Map.Entry<Material, Double> entry : map.entrySet()) {
+            Material item = entry.getKey();
+            Double price = entry.getValue();
+            if (inventory.firstEmpty() == -1) {
+                pages.add(inventory);
+                inventory = new GuiHandler("Blocks", player).getGui();
+            }
+            if(sellPricesConfig.getBlocksWithChances().get(entry.getKey()) == 0.0) {
+                //Set the display name of the item and the Item meta.
+                // Make sure the itemMeta contains the current block chance, and actions to set chances.
+                inventory.setItem(inventory.firstEmpty(), new ItemStack(item));
+            }
+        }
+        pages.add(inventory);
+        return pages;
+    }
+
+    public void addNavigationBar(){
+
     }
 
 }

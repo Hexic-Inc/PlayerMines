@@ -1,6 +1,6 @@
 main: org.hexic.playermines.PlayerMines
 name: PlayerMines
-version: 0.5
+version: 0.6.1
 api-version: 1.16
 author: Hexic
 depend:

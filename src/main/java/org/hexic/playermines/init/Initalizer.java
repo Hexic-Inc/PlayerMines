@@ -12,9 +12,7 @@ import org.hexic.playermines.data.yml.MineCrateConfig;
 import org.hexic.playermines.data.yml.SellPricesConfig;
 import org.hexic.playermines.data.yml.YmlConfig;
 import org.hexic.playermines.handlers.CoolDownHandler;
-import org.hexic.playermines.listeners.GuiClick;
-import org.hexic.playermines.listeners.MineCrate;
-import org.hexic.playermines.listeners.MineReset;
+import org.hexic.playermines.listeners.*;
 import org.hexic.playermines.managers.commands.CommandManager;
 import org.hexic.playermines.managers.data.DataManager;
 import org.hexic.playermines.world.PlayerMine;
@@ -84,6 +82,8 @@ public class Initalizer {
         getServer().getPluginManager().registerEvents(new MineReset(),plugin);
         getServer().getPluginManager().registerEvents(new GuiClick(), plugin);
         getServer().getPluginManager().registerEvents(new MineCrate(), plugin);
+        getServer().getPluginManager().registerEvents(new WorldJoin(),plugin);
+        //getServer().getPluginManager().registerEvents(new PlayerTP(), plugin);
         /*for(Class<?> clazz : new Reflections(plugin.getClass().getPackage().getName() + ".listeners").getSubTypesOf(Listener.class) ){
             try{
                 Listener listener = (Listener) clazz.getDeclaredConstructor().newInstance();

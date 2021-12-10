@@ -16,9 +16,10 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.session.ClipboardHolder;
 
 import com.sk89q.worldguard.WorldGuard;
-import com.sk89q.worldguard.protection.flags.Flags;
-import com.sk89q.worldguard.protection.flags.StateFlag;
+import com.sk89q.worldguard.protection.flags.*;
+import com.sk89q.worldguard.protection.flags.registry.FlagRegistry;
 import com.sk89q.worldguard.protection.managers.RegionManager;
+import com.sk89q.worldguard.protection.managers.storage.StorageException;
 import com.sk89q.worldguard.protection.regions.GlobalProtectedRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedCuboidRegion;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
@@ -33,6 +34,7 @@ import me.jet315.prisonmines.JetsPrisonMines;
 import me.jet315.prisonmines.JetsPrisonMinesAPI;
 
 import me.jet315.prisonmines.mine.Mine;
+import me.jet315.prisonmines.mine.blocks.MineBlock;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.*;
 import org.bukkit.entity.ArmorStand;
@@ -121,13 +123,18 @@ public class PlayerMine {
         return this;
     }
 
-    public static String mineOwner(Location location){
+    public static Player mineOwner(Location location){
         String mineLocation = mineLocation(location);
         MinesJson minesJson = new MinesJson(mineLocation);
-        return minesJson.getValue("Owner");
+        return Bukkit.getPlayer(UUID.fromString(minesJson.getValue("Owner")));
     }
 
-    public static String mineLocation(Location location){
+    /**
+     * Get the Json Mine Location for that players mine.
+     * @param location Minecraft Location.
+     * @return Mine Location. EX. "0,0"
+     */
+    public static String prisonMineLocation(Location location){
         JetsPrisonMinesAPI jetsPrisonMinesAPI = ((JetsPrisonMines) Bukkit.getPluginManager().getPlugin("JetsPrisonMines")).getAPI();
         ArrayList<Mine> mines = jetsPrisonMinesAPI.getMinesByLocation(location);
         int minLocationX = mines.get(0).getMineRegion().getMinPoint().getBlockX();
@@ -138,6 +145,28 @@ public class PlayerMine {
         int mineSpace = 3;
         int totalX = resultX / mineSpace;
         int totalY = resultY / mineSpace;
+        return totalX + "," + totalY;
+    }
+
+    public static String mineLocation(Location location){
+        int minLocationX = location.getBlockX();
+        int minLocationY = location.getBlockY();
+        float borderSize = getBorderLength();
+        float resultX;
+        float resultY;
+        if(minLocationX < borderSize){
+            resultX = minLocationX / borderSize;
+        } else {
+            resultX = minLocationX;
+        }
+        if(minLocationY < borderSize){
+            resultY = minLocationY / borderSize;
+        } else {
+            resultY = minLocationY;
+        }
+        int mineSpace = 3;
+        int totalX = Math.round( resultX / mineSpace);
+        int totalY = Math.round( resultY / mineSpace);
         return totalX + "," + totalY;
     }
 
@@ -281,6 +310,21 @@ public class PlayerMine {
         return price;
     }
 
+    public String getUpgradeType(Upgrade upgrade){
+        String string = config.getSectionValue("Enchant_Costs", upgradeAsString(upgrade));
+        if(string.contains("G")){
+           return "Gems";
+        } else if(string.contains("T")){
+           return "Tokens";
+        } else if(string.contains("$")){
+           return "Money";
+        }
+        return "";
+
+
+
+    }
+
     /**
      * Remove the supported currency from the players account.
      * @param upgrade Upgrade that is being selected.
@@ -375,6 +419,14 @@ public class PlayerMine {
         }, 100);
     }
 
+    public ArrayList<MineBlock> getMineBlocks(){
+         return jetsPrisonMinesAPI.getMineManager().getMineByName(mineName).getBlockManager().getMineBlocks();
+    }
+
+    public float getMineBlockChance(ItemStack item){
+        return jetsPrisonMinesAPI.getMineManager().getMineByName(mineName).getBlockManager().getChanceOfBlock(item);
+    }
+
 
     /**
      * Create the Auto Sell region for the players mine.
@@ -393,8 +445,8 @@ public class PlayerMine {
      * @param location Approximate location of where the hologram is.
      */
     public void removeHologram(Location location, int boxRadius){
-        Collection<Entity> nearbyEntites = Objects.requireNonNull(location.getWorld()).getNearbyEntities(location, boxRadius, boxRadius, boxRadius);
-        nearbyEntites.forEach(entity -> {
+        Collection<Entity> nearbyEntities = Objects.requireNonNull(location.getWorld()).getNearbyEntities(location, boxRadius, boxRadius, boxRadius);
+        nearbyEntities.forEach(entity -> {
             if(entity.getType().equals(EntityType.ARMOR_STAND)){
                 entity.remove();
             }
@@ -538,9 +590,9 @@ public class PlayerMine {
      * @param addLevel Size to increase the mine by.
      */
     private void setMineSize(int addLevel){
-        ArrayList<String> coords = convertString(ownerJson.getValue("Mine-Size"));
-        String[] first = coords.get(0).split(",");
-        String[] second = coords.get(1).split(",");
+        ArrayList<String> cords = convertString(ownerJson.getValue("Mine-Size"));
+        String[] first = cords.get(0).split(",");
+        String[] second = cords.get(1).split(",");
         String newCoord = ("{" + ((Integer.parseInt(first[0]) - addLevel) +",") + (first[1] + ",") + (Integer.parseInt(first[2]) - addLevel)+"}" + ", " + "{" + ((Integer.parseInt(second[0]) + addLevel) +",") + (second[1] + ",") + (Integer.parseInt(second[2]) + addLevel)+ "}");
         ownerJson.setValue("Size", newCoord);
         createPrisonMine();
@@ -550,6 +602,7 @@ public class PlayerMine {
      * Reset the players mine manually.
      */
     public void reset(){
+        teleport(Objects.requireNonNull(ownerPlayer.getPlayer()));
         jetsPrisonMinesAPI.getMineByName(mineName).reset(true);
     }
 
@@ -566,8 +619,8 @@ public class PlayerMine {
      * @return The MineCraft location of the players mine.
      */
     public Location mineLocation(){
-        String pMineCoord = ownerJson.getValue("Location");
-        String[] split = pMineCoord.split(",");
+        String pMineCord = ownerJson.getValue("Location");
+        String[] split = pMineCord.split(",");
         int x = Integer.parseInt(split[0]);
         int y = Integer.parseInt(split[1]);
         return new Location(Bukkit.getWorld(config.getWorldName()),xAsCoord(x),100,yAsCoord(y) -  (Math.round(getBorderLength())));
@@ -589,6 +642,16 @@ public class PlayerMine {
         setBorder(player);
     }
 
+    public Location getTeleportLocation() {
+        Location mineLocation = mineLocation();
+        Map<String, String> data = ownerJson.getData();
+        String[] split = data.get("TP-Location").split(",");
+        int x = Integer.parseInt(split[0]);
+        int y = Integer.parseInt(split[1]);
+        int z = Integer.parseInt(split[2]);
+        return new Location(mineLocation.getWorld(), mineLocation.getX() + x, y, mineLocation.getZ() + z);
+    }
+
     /**
      * Get the list of players at the mine.
      * @param mineName Name of the mine. Usually the UUID of the owner of the mine.
@@ -602,7 +665,6 @@ public class PlayerMine {
                     playersAtMine.add(player);
                 }
             }
-
             return playersAtMine;
     }
 
@@ -621,10 +683,6 @@ public class PlayerMine {
      * Create the mine and all the associated data needed for that player instance.
      */
     public void createMine(){
-        if(Bukkit.getWorld(config.getWorldName()) == null) {//Check to see if the world exists.
-            createWorld();
-            createGlobalRegion();
-        }
         createPlayerData();
         createMineData();
         createPrisonMine();
@@ -653,8 +711,13 @@ public class PlayerMine {
     public void setMineBlocks(Map<ItemStack, Float> contents){
         Mine mine = jetsPrisonMinesAPI.getMineManager().getMineByName(mineName);
         contents.forEach((block, chance) -> {
-            jetsPrisonMinesAPI.addBlockToMine(mine, block, chance);
+            if(mine.getBlockManager().getMineBlocks().contains(block)){
+                mine.getBlockManager().modifyBlockChanceInRegion(block,chance);
+            } else {
+                jetsPrisonMinesAPI.addBlockToMine(mine, block, chance);
+            }
         });
+
     }
 
     /**
@@ -669,16 +732,16 @@ public class PlayerMine {
      * Create the JetsPrisonMines mine for the player.
      */
     private void createPrisonMine() {
-        String[] coords = config.getMineCoords().split(";");
-        Location first = convertCoords(coords[0]);
-        Location second = convertCoords(coords[1]);
+        String[] cords = config.getMineCords().split(";");
+        Location first = convertcords(cords[0]);
+        Location second = convertcords(cords[1]);
         if (jetsPrisonMinesAPI.createMine(mineName, first, second)) { // Create a mine if the player doesn't have a mine already.
             Map<String,String> data = ownerJson.getData();
             jetsPrisonMinesAPI.getMineManager().getMineByName(mineName).setCustomName(mineName);
             setMineBlocks(convertBlocks(data.get("Mine-Contents")));
             jetsPrisonMinesAPI.getMineManager().getMineByName(mineName).getResetManager().setUseMessages(false);
             jetsPrisonMinesAPI.getMineManager().getMineByName(mineName).getResetManager().setUsePercentage(true);
-            jetsPrisonMinesAPI.getMineManager().getMineByName(mineName).setSpawnLocation(mineLocation());
+            jetsPrisonMinesAPI.getMineManager().getMineByName(mineName).setSpawnLocation(getTeleportLocation());
             jetsPrisonMinesAPI.getMineManager().getMineByName(mineName).getResetManager().setPercentageReset(50);
             jetsPrisonMinesAPI.getMineManager().getMineByName(mineName).getResetManager().setUseTimer(false);
             jetsPrisonMinesAPI.getMineManager().getMineByName(mineName).save();
@@ -688,7 +751,7 @@ public class PlayerMine {
             jetsPrisonMinesAPI.getMineManager().getMineByName(mineName).setCustomName(mineName);
             jetsPrisonMinesAPI.getMineManager().getMineByName(mineName).getResetManager().setUseMessages(false);
             jetsPrisonMinesAPI.getMineManager().getMineByName(mineName).getResetManager().setUsePercentage(true);
-            jetsPrisonMinesAPI.getMineManager().getMineByName(mineName).setSpawnLocation(mineLocation());
+            jetsPrisonMinesAPI.getMineManager().getMineByName(mineName).setSpawnLocation(getTeleportLocation());
             jetsPrisonMinesAPI.getMineManager().getMineByName(mineName).getResetManager().setPercentageReset(50);
             jetsPrisonMinesAPI.getMineManager().getMineByName(mineName).getResetManager().setUseTimer(false);
             jetsPrisonMinesAPI.getMineManager().getMineByName(mineName).save();
@@ -705,7 +768,6 @@ public class PlayerMine {
      */
     private void createPlayerData(){
         ownerJson.setValue("Location",getAvailableLocation());
-
         Map<String,String> data = ownerJson.getData();
         data.put("Size", "0");
         data.put("Regen_Time", "0");
@@ -721,7 +783,7 @@ public class PlayerMine {
         data.put("Berserk_Count", "0");
         data.put("Public", "false");
         data.put("Mine-Contents", config.getPmineContents());
-        data.put("Mine-Size", config.getMineCoords());
+        data.put("Mine-Size", config.getMineCords());
         data.put("TP-Location", config.getTPLocation());
         ownerJson.setValue(data);
     }
@@ -748,11 +810,11 @@ public class PlayerMine {
 
     /**
      * Convert Mine Location string to a MineCraft location.
-     * @param coords Coords as a string EX. "150,100,150"
+     * @param cords cords as a string EX. "150,100,150"
      * @return String as a MineCraft Location. EX. "1150,100,850"
      */
-    private Location convertCoords(String coords){
-        String newString = coords.replace(" ", "");
+    private Location convertcords(String cords){
+        String newString = cords.replace(" ", "");
         String pMineCoord =  ownerJson.getValue("Location");
         String[] mineSplit = pMineCoord.split(",");
         int mineX = Integer.parseInt(mineSplit[0]);
@@ -803,24 +865,48 @@ public class PlayerMine {
                 creator.createWorld();
             }
         }.runTask(PlayerMines.getInitalizer().getPlugin());
+        createGlobalRegion();
     }
 
     /**
-     * Create the Region for that Players mine.
+     * Create the Region for that Players mine.Y
      */
     private void createMineRegion(){
         RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
         RegionManager regions = container.get(BukkitAdapter.adapt(getMineWorld()));
-        if(!regions.hasRegion(mineName)) {
-            Location first = jetsPrisonMinesAPI.getMineManager().getMineByName(mineName).getMineRegion().getMinPoint();
-            Location second = jetsPrisonMinesAPI.getMineManager().getMineByName(mineName).getMineRegion().getMaxPoint();
-            BlockVector3 min = BlockVector3.at(first.getX(), first.getY(), first.getZ());
-            BlockVector3 max = BlockVector3.at(second.getX(), second.getY(), second.getZ());
-            ProtectedRegion region = new ProtectedCuboidRegion(mineName, min, max);
-            region.setPriority(1);
-            region.setFlag(Flags.BLOCK_BREAK, StateFlag.State.ALLOW);
-            regions.addRegion(region);
+        if(regions.hasRegion(mineName)) {
+            regions.removeRegion(mineName);
+            try {
+                regions.save();
+            } catch (StorageException e) {
+                e.printStackTrace();
+            }
         }
+        Location first = jetsPrisonMinesAPI.getMineManager().getMineByName(mineName).getMineRegion().getMinPoint();
+        Location second = jetsPrisonMinesAPI.getMineManager().getMineByName(mineName).getMineRegion().getMaxPoint();
+        BlockVector3 min = BlockVector3.at(first.getX(), first.getY(), first.getZ());
+        BlockVector3 max = BlockVector3.at(second.getX(), second.getY(), second.getZ());
+        ProtectedCuboidRegion region = new ProtectedCuboidRegion(mineName, min, max);
+        region.setPriority(1);
+        region.getMembers().addPlayer(UUID.fromString(uuid));
+        regions.addRegion(region);
+        Map<String, Boolean> flags = config.getMineRegionFlags();
+        flags.forEach((s, state) -> {
+            String str = s;
+            if(str.contains(" ")){
+                str = s.replace(" ", "");
+            }
+            StateFlag.State temp;
+            if(state){
+                temp = StateFlag.State.ALLOW;
+            } else {
+                temp = StateFlag.State.DENY;
+            }
+            Flag<?> flag = WorldGuard.getInstance().getFlagRegistry().get(str);
+            region.setFlag((StateFlag) flag, temp);
+            region.setFlag(flag.getRegionGroupFlag(), RegionGroup.MEMBERS);
+
+        });
     }
 
     /**
@@ -840,17 +926,36 @@ public class PlayerMine {
     /**
      * Create the Global Region for the Player Mine world.
      */
-    private void createGlobalRegion(){
+    private static void createGlobalRegion(){
         RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
         RegionManager regions = container.get(BukkitAdapter.adapt(getMineWorld()));
-        if(!regions.hasRegion("__global__")) {
-            GlobalProtectedRegion region = new GlobalProtectedRegion("__global__");
-            region.setFlag(Flags.BLOCK_BREAK, StateFlag.State.DENY);
-            region.setFlag(Flags.CHORUS_TELEPORT, StateFlag.State.DENY);
-            region.setFlag(Flags.MOB_SPAWNING, StateFlag.State.DENY);
-            region.setFlag(Flags.ENDERPEARL, StateFlag.State.DENY);
-            regions.addRegion(region);
+        if(regions.hasRegion("__global__")) {
+            regions.removeRegion("__global__");
+            try {
+                regions.save();
+            } catch (StorageException e) {
+                e.printStackTrace();
+            }
         }
+        GlobalProtectedRegion region = new GlobalProtectedRegion("__global__");
+        Map<String, Boolean> flags = new YmlConfig().getGlobalRegionFlags();
+        region.setPriority(0);
+        flags.forEach((s, state) -> {
+            String str = s;
+            if(str.contains(" ")){
+                str = s.replace(" ", "");
+            }
+            StateFlag.State temp;
+            if(state){
+                temp = StateFlag.State.ALLOW;
+            } else {
+                temp = StateFlag.State.DENY;
+            }
+            Flag<?> flag = WorldGuard.getInstance().getFlagRegistry().get(str);
+            region.setFlag((StateFlag) flag, temp);
+
+        });
+        regions.addRegion(region);
     }
 
     /**
@@ -965,11 +1070,11 @@ public class PlayerMine {
         int y = Integer.parseInt(split[1]);
         int[] newX = {x, x + 1, x, x - 1};
         int[] newY = {y + 1, y, y - 1, y};
-        String[] coords = new String[4];
+        String[] cords = new String[4];
         for(int i = 0; i < 4; i++){
-            coords[i] = newX[i] + "," + newY[i];
+            cords[i] = newX[i] + "," + newY[i];
         }
-        return coords;
+        return cords;
     }
 
     private String[] getCorners(String size){
