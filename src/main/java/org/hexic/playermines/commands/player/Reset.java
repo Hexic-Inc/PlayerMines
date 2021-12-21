@@ -33,4 +33,9 @@ public class Reset extends SubCommand {
             return;
         }
     }
+
+    @Override
+    public String getPermission() {
+        return "PlayerMines.Reset";
+    }
 }

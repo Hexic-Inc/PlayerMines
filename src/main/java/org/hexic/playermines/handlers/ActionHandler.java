@@ -14,6 +14,7 @@ import org.hexic.playermines.data.yml.SellPricesConfig;
 import org.hexic.playermines.world.Upgrade;
 import org.hexic.playermines.world.PlayerMine;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -47,22 +48,26 @@ public class ActionHandler {
         PlayerMine playerMine = new PlayerMine(player);
 
 
-        if(player.getOpenInventory().getTopInventory().getContents() == new GuiHandler("Blocks-Gui",player).fillGuiWithBlocks().get(01).getContents()){
+        if(Arrays.equals(player.getOpenInventory().getTopInventory().getContents(), new GuiHandler("Blocks-Gui", player).fillGuiWithBlocks().get(0).getContents())){
            boolean remove = clickType.isShiftClick();
            int click = calculatePercentClick(clickType);
            ItemStack clickedBlock = event.getCurrentItem();
-           if(remove){
-               Map<ItemStack,Float> contents = new HashMap<>();
-               contents.put(clickedBlock, playerMine.getMineBlockChance(clickedBlock) - click);
-               playerMine.setMineBlocks(contents);
-               player.sendMessage("Set " + clickedBlock.getItemMeta().getDisplayName() + "to " + (playerMine.getMineBlockChance(clickedBlock) - click));
-               return;
-           }
-            Map<ItemStack,Float> contents = new HashMap<>();
-            contents.put(clickedBlock, playerMine.getMineBlockChance(clickedBlock) + click);
-            player.sendMessage("Set " + clickedBlock.getItemMeta().getDisplayName() + "to " + (playerMine.getMineBlockChance(clickedBlock) + click));
-            playerMine.setMineBlocks(contents);
+            Map<ItemStack, Float> contents = new HashMap<>();
+            if(remove){
+                if(clickType.isCreativeAction()) {
+                   contents.put(clickedBlock, 0f);
+               } else {
+                   contents.put(clickedBlock, playerMine.getMineBlockChance(clickedBlock) - click);
+               }
+                playerMine.setMineBlocks(contents);
+                player.sendMessage("Set " + clickedBlock.getItemMeta().getDisplayName() + "to " + (playerMine.getMineBlockChance(clickedBlock) - click));
+            } else {
+                contents.put(clickedBlock, playerMine.getMineBlockChance(clickedBlock) + click);
+                player.sendMessage("Set " + clickedBlock.getItemMeta().getDisplayName() + "to " + (playerMine.getMineBlockChance(clickedBlock) + click));
+                playerMine.setMineBlocks(contents);
+            }
             return;
+
         }
 
 

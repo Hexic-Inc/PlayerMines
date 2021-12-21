@@ -365,6 +365,9 @@ public class PlayerMine {
             if(upgrade == Upgrade.SIZE){
                // setMineSize(level);
             }
+            if(upgrade == Upgrade.MINE_MULTIPLIER){
+
+            }
             return true;
         }
         return false;

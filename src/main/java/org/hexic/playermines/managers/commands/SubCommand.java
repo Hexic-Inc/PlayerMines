@@ -13,4 +13,10 @@ public abstract class SubCommand {
     //code for the subcommand
     public abstract void perform(Player player, String args[]);
 
+    /**
+     * Get the command specific permission node.
+     * @return Gets the permission node.
+     */
+    public abstract String getPermission();
+
 }

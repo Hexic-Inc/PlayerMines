@@ -27,4 +27,9 @@ public class Create extends SubCommand {
         pMine.createMine();
         player.sendMessage(lang.getPrefixValue(getName(), "Mine_Created", "&cYour mine has been created!"));
     }
+
+    @Override
+    public String getPermission() {
+        return "PlayerMines.Create";
+    }
 }

@@ -33,4 +33,9 @@ public class Tp extends SubCommand {
             player.sendMessage(lang.getPrefixValue(getName(), "Invalid_Mine", "&cPlayer does not have a mine!"));
         }
     }
+
+    @Override
+    public String getPermission() {
+        return "PlayerMines.Teleport";
+    }
 }

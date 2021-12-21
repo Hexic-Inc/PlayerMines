@@ -6,6 +6,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.hexic.playermines.PlayerMines;
 import org.hexic.playermines.commands.player.Create;
 import org.hexic.playermines.commands.player.Reset;
 import org.hexic.playermines.commands.player.Tp;
@@ -35,14 +36,20 @@ public class CommandManager implements CommandExecutor {
             if (args.length > 0) {
                 if(args[0].equalsIgnoreCase("help")){
                     p.sendMessage("--------------------------------");
-                    for (int i = 0; i < subcommands.size(); i++) {
-                        p.sendMessage(subcommands.get(i).getName() + " - " + subcommands.get(i).getDescription());
+                    for (SubCommand subcommand : subcommands) {
+                        if (PlayerMines.getInitalizer().getPerms().has(p, subcommand.getPermission())) {
+                            p.sendMessage(subcommand.getName() + " - " + subcommand.getDescription());
+                        }
                     }
                     p.sendMessage("--------------------------------");
                 }
-                for (int i = 0; i < subcommands.size(); i++) {
-                    if (args[0].equalsIgnoreCase(subcommands.get(i).getName())) {
-                        subcommands.get(i).perform(p, args);
+                for (SubCommand subcommand : subcommands) {
+                    if (args[0].equalsIgnoreCase(subcommand.getName())) {
+                        if (PlayerMines.getInitalizer().getPerms().has(p, subcommand.getPermission())) {
+                            subcommand.perform(p, args);
+                        } else {
+                            p.sendMessage(new LangConfig(p).getPrefixValue("General-Messages", "No-Permission", "&cYou don't have permission to do that."));
+                        }
                     }
                 }
             } else {
@@ -64,8 +71,8 @@ public class CommandManager implements CommandExecutor {
                 }
             } else {
                 p.sendMessage("--------------------------------");
-                for (int i = 0; i < subcommands.size(); i++) {
-                    p.sendMessage(subcommands.get(i).getName() + " - " + subcommands.get(i).getDescription());
+                for (SubCommand subcommand : subcommands) {
+                    p.sendMessage(subcommand.getName() + " - " + subcommand.getDescription());
                 }
                 p.sendMessage("--------------------------------");
             }
