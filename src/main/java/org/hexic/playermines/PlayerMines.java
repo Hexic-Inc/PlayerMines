@@ -1,30 +1,21 @@
 package org.hexic.playermines;
 
 
-import me.drawethree.ultraprisoncore.UltraPrisonCore;
 import org.bukkit.Bukkit;
-import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import org.hexic.playermines.data.yml.YmlConfig;
-import org.hexic.playermines.init.Initalizer;
+import org.hexic.playermines.init.Initializer;
 import org.hexic.playermines.world.PlayerMine;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.Objects;
-import java.util.logging.Logger;
-
-import static org.bukkit.Bukkit.getServer;
 
 
 public class PlayerMines extends JavaPlugin {
 
-    private static Initalizer initalizer;
+    private static Initializer initializer;
 
     @Override
     public void onEnable() {
-        initalizer = new Initalizer(this);
-        initalizer.initAll();
+        initializer = new Initializer(this);
+        initializer.initAll();
     }
 
 
@@ -36,6 +27,6 @@ public class PlayerMines extends JavaPlugin {
 
     }
 
-    public static Initalizer getInitalizer(){return initalizer;}
+    public static Initializer getInitalizer(){return initializer;}
 
 }

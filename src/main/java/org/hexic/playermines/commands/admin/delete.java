@@ -18,4 +18,9 @@ public class delete extends SubCommand {
     public void perform(Player player, String[] args) {
 
     }
+
+    @Override
+    public String getPermission() {
+        return "PlayerMines.Admin.Delete";
+    }
 }

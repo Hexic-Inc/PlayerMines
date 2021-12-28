@@ -798,7 +798,7 @@ public class PlayerMine {
      */
     private Map<ItemStack, Float> convertBlocks(String rawContents){
         //Change this to get the players blocks once we create the player in the json.
-        // For now we're just going to use the default blocks from Config.yml
+        // For now, we're just going to use the default blocks from Config.yml
         String newContents = rawContents.replace("[", "").replace("]","").replace(" ", "");
         String[] blocks = newContents.split(",");
         Map<ItemStack, Float> map = new HashMap<>();
@@ -860,14 +860,9 @@ public class PlayerMine {
      */
     public static void createWorld(){
         //Create the world on another thread.
-        new BukkitRunnable(){
-            @Override
-            public void run() {
                 WorldCreator creator = new WorldCreator(new YmlConfig().getWorldName());//Create the pmine world.
                 creator.generator(new EmptyChunkGenerator());
                 creator.createWorld();
-            }
-        }.runTask(PlayerMines.getInitalizer().getPlugin());
         createGlobalRegion();
     }
 
@@ -932,6 +927,7 @@ public class PlayerMine {
     private static void createGlobalRegion(){
         RegionContainer container = WorldGuard.getInstance().getPlatform().getRegionContainer();
         RegionManager regions = container.get(BukkitAdapter.adapt(getMineWorld()));
+        assert regions != null;
         if(regions.hasRegion("__global__")) {
             regions.removeRegion("__global__");
             try {

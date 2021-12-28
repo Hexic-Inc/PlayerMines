@@ -32,7 +32,7 @@ import java.util.Set;
 
 import static org.bukkit.Bukkit.getServer;
 
-public class Initalizer {
+public class Initializer {
 
     private final JavaPlugin plugin;
     private final DataManager dataManager;
@@ -41,7 +41,7 @@ public class Initalizer {
     private CoolDownHandler coolDownHandler;
 
 
-    public Initalizer(JavaPlugin plugin){
+    public Initializer(JavaPlugin plugin){
         this.plugin = plugin;
         this.dataManager = new DataManager(this.plugin);
     }
@@ -55,12 +55,12 @@ public class Initalizer {
     public CoolDownHandler getCoolDownHandler(){return coolDownHandler;}
 
     public void initAll(){
+        initWorld();
         initEcon();
         initPerms();
         initData();
         initListeners();
         initCommands();
-        initWorld();
         loadCoolDownHandler();
     }
 

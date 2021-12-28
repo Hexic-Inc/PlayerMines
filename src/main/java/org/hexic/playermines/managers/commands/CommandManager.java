@@ -1,6 +1,7 @@
 package org.hexic.playermines.managers.commands;
 
 
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -37,18 +38,18 @@ public class CommandManager implements CommandExecutor {
                 if(args[0].equalsIgnoreCase("help")){
                     p.sendMessage("--------------------------------");
                     for (SubCommand subcommand : subcommands) {
-                        if (PlayerMines.getInitalizer().getPerms().has(p, subcommand.getPermission())) {
-                            p.sendMessage(subcommand.getName() + " - " + subcommand.getDescription());
+                        if (PlayerMines.getInitalizer().getPerms().playerHas(p, subcommand.getPermission()) || p.isOp()) {
+                            p.sendMessage( "⌜" + subcommand.getName() + " - " + subcommand.getDescription());
                         }
                     }
                     p.sendMessage("--------------------------------");
                 }
                 for (SubCommand subcommand : subcommands) {
                     if (args[0].equalsIgnoreCase(subcommand.getName())) {
-                        if (PlayerMines.getInitalizer().getPerms().has(p, subcommand.getPermission())) {
+                        if (PlayerMines.getInitalizer().getPerms().playerHas(p, subcommand.getPermission()) || p.isOp()) {
                             subcommand.perform(p, args);
                         } else {
-                            p.sendMessage(new LangConfig(p).getPrefixValue("General-Messages", "No-Permission", "&cYou don't have permission to do that."));
+                            p.sendMessage(ChatColor.translateAlternateColorCodes('&', "&cYou don't have permission to perform that command."));
                         }
                     }
                 }
@@ -71,8 +72,8 @@ public class CommandManager implements CommandExecutor {
                 }
             } else {
                 p.sendMessage("--------------------------------");
-                for (SubCommand subcommand : subcommands) {
-                    p.sendMessage(subcommand.getName() + " - " + subcommand.getDescription());
+                for (int i = 0; i < subcommands.size(); i++) {
+                    p.sendMessage(subcommands.get(i).getName() + " - " + subcommands.get(i).getDescription());
                 }
                 p.sendMessage("--------------------------------");
             }

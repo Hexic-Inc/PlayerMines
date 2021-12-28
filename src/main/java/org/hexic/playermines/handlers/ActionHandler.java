@@ -42,32 +42,39 @@ public class ActionHandler {
     }
 
     public void doAction(InventoryClickEvent event){
+
+
         this.prevInv = event.getClickedInventory();
         ClickType clickType = event.getClick();
         Player player = (Player) event.getWhoClicked();
         PlayerMine playerMine = new PlayerMine(player);
+        double lockedPercent = 0;
+        int click = calculatePercentClick(event);
+        ItemStack clickedBlock = event.getCurrentItem();
+        Map<ItemStack, Float> contents = new HashMap<>();
+        for (Map.Entry<Material, Double> entry : new SellPricesConfig().getBlocksWithPrices().entrySet()) {lockedPercent +=  entry.getValue();}
 
-
-        if(Arrays.equals(player.getOpenInventory().getTopInventory().getContents(), new GuiHandler("Blocks-Gui", player).fillGuiWithBlocks().get(0).getContents())){
-           boolean remove = clickType.isShiftClick();
-           int click = calculatePercentClick(clickType);
-           ItemStack clickedBlock = event.getCurrentItem();
-            Map<ItemStack, Float> contents = new HashMap<>();
-            if(remove){
-                if(clickType.isCreativeAction()) {
-                   contents.put(clickedBlock, 0f);
-               } else {
-                   contents.put(clickedBlock, playerMine.getMineBlockChance(clickedBlock) - click);
-               }
-                playerMine.setMineBlocks(contents);
-                player.sendMessage("Set " + clickedBlock.getItemMeta().getDisplayName() + "to " + (playerMine.getMineBlockChance(clickedBlock) - click));
-            } else {
-                contents.put(clickedBlock, playerMine.getMineBlockChance(clickedBlock) + click);
-                player.sendMessage("Set " + clickedBlock.getItemMeta().getDisplayName() + "to " + (playerMine.getMineBlockChance(clickedBlock) + click));
-                playerMine.setMineBlocks(contents);
+        if(Arrays.equals(player.getOpenInventory().getTopInventory().getContents(), new GuiHandler("Blocks-Gui", player).fillGuiWithBlocks().get(0).getContents())) {
+            boolean remove = clickType.isShiftClick();
+            if (remove) {
+                if (click > 10) {
+                    if (clickType.isCreativeAction()) {
+                        contents.put(clickedBlock, 0f);
+                        playerMine.setMineBlocks(contents);
+                        player.sendMessage("Set " + clickedBlock + "to " + 0);
+                    } else {
+                        contents.put(clickedBlock, playerMine.getMineBlockChance(clickedBlock) - click);
+                        playerMine.setMineBlocks(contents);
+                        player.sendMessage("Set " + clickedBlock + "to " + (playerMine.getMineBlockChance(clickedBlock) - click));
+                    }
+                    return;
+                }
             }
-            return;
-
+        }
+        if(playerMine.getMineBlockChance(clickedBlock) + click < 100 - lockedPercent) {
+                contents.put(clickedBlock, playerMine.getMineBlockChance(clickedBlock) - click);
+                playerMine.setMineBlocks(contents);
+                player.sendMessage("Set " + clickedBlock + "to " + (playerMine.getMineBlockChance(clickedBlock) - click));
         }
 
 
@@ -122,16 +129,13 @@ public class ActionHandler {
     }
 
 
-    public int calculatePercentClick(ClickType clickType){
+    public int calculatePercentClick(InventoryClickEvent event){
         int count = 0;
+        ClickType clickType = event.getClick();
+        Player player = (Player) event.getWhoClicked();
         if(clickType.isCreativeAction()){
-            SellPricesConfig sellPricesConfig = new SellPricesConfig();
-            Map<Material,Double> map = sellPricesConfig.getBlocksWithPrices();
-            for (Map.Entry<Material, Double> entry : map.entrySet()) {
-                if(sellPricesConfig.getBlocksWithChances().get(entry.getKey()) == 0.0) {
-                    count++;
-                }
-            }
+            PlayerMine playerMine = new PlayerMine(player);
+            count = (int) playerMine.getMineBlockChance(event.getCurrentItem());
         }else if(clickType.isLeftClick()){
             count = 10;
         } else {

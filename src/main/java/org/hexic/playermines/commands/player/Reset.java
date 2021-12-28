@@ -9,7 +9,7 @@ import org.hexic.playermines.world.PlayerMine;
 public class Reset extends SubCommand {
     @Override
     public String getName() {
-        return "reset";
+        return "Reset";
     }
 
     @Override

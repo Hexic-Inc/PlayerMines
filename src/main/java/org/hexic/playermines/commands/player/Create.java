@@ -8,7 +8,7 @@ import org.hexic.playermines.world.PlayerMine;
 public class Create extends SubCommand {
     @Override
     public String getName() {
-        return "create";
+        return "Create";
     }
 
     @Override

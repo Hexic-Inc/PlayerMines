@@ -8,7 +8,7 @@ import org.hexic.playermines.world.PlayerMine;
 public class Tp extends SubCommand {
     @Override
     public String getName() {
-        return "tp";
+        return "Tp";
     }
 
     @Override
