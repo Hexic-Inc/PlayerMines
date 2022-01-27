@@ -15,7 +15,7 @@ public class GuiClick implements Listener {
 
     @EventHandler
     public void guiClick(InventoryClickEvent e){
-        if(e.getInventory().getHolder() instanceof GuiHolder){
+        if(e.getInventory().getHolder() instanceof GuiHolder && e.getCursor() != null){
             e.setCancelled(true);
             ActionHandler act = new ActionHandler(new GuiHandler().getAction(e.getCurrentItem(),(Player) e.getWhoClicked()));
             act.doAction(e);

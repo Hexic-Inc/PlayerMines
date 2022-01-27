@@ -1,5 +1,6 @@
 package org.hexic.playermines.data.yml;
 
+import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.hexic.playermines.PlayerMines;
 import org.hexic.playermines.managers.data.Config;
@@ -59,6 +60,7 @@ public class GuiConfig {
         createSize();
         createRegen();
         createBlocksGui();
+        createMineBlockPercent();
     }
 
     private void createBlocksGui(){
@@ -67,7 +69,7 @@ public class GuiConfig {
         //Full lava slot block
         config.setListValue(section, "Display_Name", "&8Mine Contents");
         config.setListValue(section, "Size", 54);
-        config.setListValue(section, "Contents", "[{1,x;$blank}, {x,9;$blank}, {6,x;$blank}, {x,1;$blank}");
+        config.setListValue(section, "Contents", "[{1,5;$mine-blocks}, {1,x;$blank}, {x,9;$blank}, {6,x;$blank}, {x,1;$blank}");
     }
 
     private void createUpgradeGui(){
@@ -89,6 +91,15 @@ public class GuiConfig {
         config.setListValue(section, "Display_Name", "&4Menu");
         config.setListValue(section, "Size", 9);
         config.setListValue(section, "Contents", "[{1,1-2;$blank}, {1,3;$tp}, {1,4;$reset}, {1,5;$upgrade}, {1,6;$change_blocks}, {1,7;$settings}, {1,8-9;$blank}]");
+    }
+
+    private void createMineBlockPercent(){
+        String section = "mine-blocks";
+        config.createSection(section);
+        config.setListValue(section, "Item", "crafting_table");
+        config.setListValue(section, "Display_Name", "&b&cMine-Contents");
+        config.setListValue(section, "Lore", "$mine-contents");
+        config.setListValue(section, "Action", "");
     }
 
     private void createTP(){

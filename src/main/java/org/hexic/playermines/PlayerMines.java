@@ -7,6 +7,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.hexic.playermines.init.Initializer;
 import org.hexic.playermines.world.PlayerMine;
 
+import java.util.Objects;
+
 
 public class PlayerMines extends JavaPlugin {
 
@@ -22,7 +24,7 @@ public class PlayerMines extends JavaPlugin {
     @Override
     public void onDisable() {
         if(PlayerMine.getMineWorld() != null){
-            Bukkit.getWorld(PlayerMine.getMineWorld().getName()).save();
+            Objects.requireNonNull(Bukkit.getWorld(PlayerMine.getMineWorld().getName())).save();
         }
 
     }

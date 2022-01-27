@@ -55,13 +55,13 @@ public class Initializer {
     public CoolDownHandler getCoolDownHandler(){return coolDownHandler;}
 
     public void initAll(){
-        initWorld();
         initEcon();
         initPerms();
         initData();
         initListeners();
         initCommands();
         loadCoolDownHandler();
+        initWorld();
     }
 
     public void loadCoolDownHandler(){

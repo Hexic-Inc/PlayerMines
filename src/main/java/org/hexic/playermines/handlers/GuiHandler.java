@@ -46,6 +46,9 @@ public class GuiHandler {
         }
     }
 
+    /**
+     * Used to do simple tasks with an already created GUI, such as reload the GUI, see if a GUI exists, and get the matching GUI.
+     */
     public GuiHandler(){
         config = new GuiConfig();
     }
@@ -79,18 +82,43 @@ public class GuiHandler {
                 if(inventory.getSize() == gui2.length) {
                     for (int i = 0; i < gui2.length; i++) {
                         ItemStack itemStack = gui2[i];
-                        if (itemStack.hasItemMeta()) {
-                            itemStack.setItemMeta(gui1[i].getItemMeta());
+                        if(itemStack != null) {
+                            if (itemStack.hasItemMeta()) {
+                                itemStack.setItemMeta(gui1[i].getItemMeta());
+                            }
+                            gui2[i] = itemStack;
                         }
-                        gui2[i] = itemStack;
                     }
-                    if (Arrays.equals(gui2, gui1)) {
+                    if (Arrays.equals(gui2, gui1) || key.toLowerCase().contains("blocks-gui")) {
                         return true;
                     }
                 }
             }
         }
         return false;
+    }
+
+    /**
+     * Used to get the display name of an existing GUI.
+     * @param name YML name of the GUI.
+     * @return The display name of the GUI.
+     */
+    public String getDisplayName(String name){
+        return translate(config.getValue(name + ".Display_Name"));
+    }
+
+    public String getYmlName(Inventory inventory){
+        if(guiExists(inventory,null)){
+            for(String key : config.getKeys()){
+                if(key.toLowerCase().contains("gui")){
+                    Inventory matchingInv = new GuiHandler(key,null).getGui();
+                    if(Arrays.equals(matchingInv.getContents(),inventory.getContents())){
+                        return key;
+                    }
+                }
+            }
+        }
+        return "";
     }
 
     public Inventory getMatchingGui(ItemStack[] gui1, Player player){
@@ -106,7 +134,7 @@ public class GuiHandler {
                         }
                         gui2[i] = itemStack;
                     }
-                    if (Arrays.equals(gui2, gui1)) {
+                    if (Arrays.equals(gui2, gui1) || key.toLowerCase().contains("blocks-gui")) {
                         return new GuiHandler(key, player).getGui();
                     }
                 }
@@ -152,22 +180,27 @@ public class GuiHandler {
         ItemStack item = new ItemStack(Material.valueOf(config.getValue(blockSection + ".Item").toUpperCase()));
         ItemMeta itemMeta = item.getItemMeta();
         String[]  lore = translate(config.getValue( blockSection + ".Lore")).split(";");
-        if(config.getValue(blockSection + ".Lore").toLowerCase().contains("upgrade")) {
-            Upgrade upgrade = Upgrade.valueOf( new GuiConfig().getValue(blockSection + ".Action").split(";")[1].toUpperCase());
-            for (int i = 0; i < lore.length; i++) {
-                if(lore[i].contains("$upgrade_cost")){
-                    lore[i] = lore[i].replace("$upgrade_cost", new PlayerMine(player).getUpgradeCost(upgrade, 1) + "");
+        if(player != null) {
+            if (config.getValue(blockSection + ".Lore").toLowerCase().contains("upgrade")) {
+                Upgrade upgrade = Upgrade.valueOf(new GuiConfig().getValue(blockSection + ".Action").split(";")[1].toUpperCase());
+                for (int i = 0; i < lore.length; i++) {
+                    if (lore[i].contains("$upgrade_cost")) {
+                        lore[i] = lore[i].replace("$upgrade_cost", new PlayerMine(player).getUpgradeCost(upgrade, 1) + "");
+                    }
+                    if (lore[i].contains("$upgrade_currency")) {
+                        lore[i] = lore[i].replace("$upgrade_currency", new PlayerMine(player).balType(upgrade) + "");
+                    }
+                    if (lore[i].contains("$upgrade_level")) {
+                        lore[i] = lore[i].replace("$upgrade_level", new PlayerMine(player).getUpgradeLevel(upgrade) + "");
+                    }
+                    if (lore[i].contains("$upgrade_max")) {
+                        lore[i] = lore[i].replace("$upgrade_max", new PlayerMine(player).getMaxUpgradeLevel(upgrade) + "");
+                    }
                 }
-                if(lore[i].contains("$upgrade_currency")){
-                    lore[i] = lore[i].replace("$upgrade_currency", new PlayerMine(player).balType(upgrade) + "");
-                }
-                if(lore[i].contains("$upgrade_level")){
-                    lore[i] = lore[i].replace("$upgrade_level", new PlayerMine(player).getUpgradeLevel(upgrade) + "");
-                }
-                if(lore[i].contains("$upgrade_max")){
-                    lore[i] = lore[i].replace("$upgrade_max", new PlayerMine(player).getMaxUpgradeLevel(upgrade) + "");
-                }
-             }
+            }
+            if(config.getValue(blockSection + ".Lore").toLowerCase().contains("$mine-contents")){
+                lore = addMinePercentages().toArray(new String[0]);
+            }
         }
         itemMeta.setDisplayName(translate(config.getValue(blockSection + ".Display_Name")));
         itemMeta.setLore(Arrays.asList(lore));
@@ -248,11 +281,21 @@ public class GuiHandler {
             if(sellPricesConfig.getBlocksWithChances().get(entry.getKey()) == 0.0) {
                 //Set the display name of the item and the Item meta.
                 // Make sure the itemMeta contains the current block chance, and actions to set chances.
-                inventory.setItem(inventory.firstEmpty(), new ItemStack(item));
+                ItemStack itemStack = new ItemStack(item);
+                inventory.setItem(inventory.firstEmpty(), itemStack);
             }
         }
         pages.add(inventory);
         return pages;
+    }
+
+    public ArrayList<String> addMinePercentages(){
+        ArrayList<String> lore = new ArrayList<>();
+        PlayerMine playerMine = new PlayerMine(player);
+        playerMine.getMineBlocks().forEach(mineBlock ->{
+            lore.add(translate("&c" + mineBlock.getItem().getType() + " -> " + playerMine.getMineBlockChance(mineBlock.getItem()) + "%"));
+        });
+        return  lore;
     }
 
     public void addNavigationBar(){

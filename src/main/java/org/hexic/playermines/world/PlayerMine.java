@@ -50,8 +50,6 @@ import org.hexic.playermines.data.yml.LangConfig;
 import org.hexic.playermines.data.yml.SellPricesConfig;
 import org.hexic.playermines.data.yml.YmlConfig;
 import org.hexic.playermines.handlers.MineCrateHandler;
-import org.jetbrains.annotations.NotNull;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -100,7 +98,7 @@ public class PlayerMine {
      * Create the instance of the players mine.
      * @param player Player that would own the mine.
      */
-    public PlayerMine(@NotNull Player player){
+    public PlayerMine( Player player){
         this.uuid = player.getUniqueId().toString();
         this.econ = PlayerMines.getInitalizer().getEcon();
         this.config = new YmlConfig();
@@ -430,6 +428,17 @@ public class PlayerMine {
         return jetsPrisonMinesAPI.getMineManager().getMineByName(mineName).getBlockManager().getChanceOfBlock(item);
     }
 
+    /**
+     * Get the total free percentage of blocks in the mine.
+     * @return Total free percentage of blocks.
+     */
+    public double getMineBlocksFreeChance(){
+        final double[] free = {100};
+        getMineBlocks().forEach(mineBlock ->
+                free[0] -= getMineBlockChance(mineBlock.getItem()));
+        return free[0];
+    }
+
 
     /**
      * Create the Auto Sell region for the players mine.
@@ -728,7 +737,10 @@ public class PlayerMine {
      * @return Bukkit world representation of the world.
      */
     public static World getMineWorld(){
-        return Bukkit.getWorld(new YmlConfig().getWorldName());
+        if(new YmlConfig().getWorldName() != null) {
+            return Bukkit.getWorld(new YmlConfig().getWorldName());
+        }
+        return null;
     }
 
     /**

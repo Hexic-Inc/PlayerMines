@@ -4,6 +4,7 @@ import org.bukkit.Material;
 import org.hexic.playermines.PlayerMines;
 import org.hexic.playermines.managers.data.Config;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -80,6 +81,32 @@ public class SellPricesConfig {
         config.saveConfig();
     }
 
+    public ArrayList<Material> getLockedBlocks(){
+        Set<String> list = config.getKeys();
+        ArrayList<Material> blocks = new ArrayList<>();
+        list.forEach(header -> {
+            if(!header.toLowerCase().contains("default")){
+                if(config.contains(header + ".Locked")){
+                    blocks.add(Material.valueOf(header.toUpperCase()));
+                }
+            }
+        });
+        return blocks;
+    }
+
+    public Double getTotalLockedChance(){
+        Set<String> list = config.getKeys();
+        final Double[] locked = {0.0};
+        list.forEach(header -> {
+            if (!header.toLowerCase().contains("default")) {
+                if (config.contains(header + ".Locked")) {
+                   locked[0] += Double.parseDouble(config.getString(header + ".Locked"));
+                }
+            }
+        });
+        return locked[0];
+    }
+
     /**
      * Get all the Blocks and their prices.
      * @return Blocks and Prices.
@@ -99,6 +126,10 @@ public class SellPricesConfig {
         return hashMap;
     }
 
+    /**
+     * Get all the blocks with their chances.
+     * @return Map of the blocks and the prices.
+     */
     public Map<Material,Double> getBlocksWithChances(){
         Set<String> list = config.getKeys();
         Map<Material,Double> hashMap = new HashMap<>();

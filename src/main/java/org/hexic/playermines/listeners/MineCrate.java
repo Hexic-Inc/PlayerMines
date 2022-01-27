@@ -5,10 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.hexic.playermines.PlayerMines;
 import org.hexic.playermines.handlers.MineCrateHandler;
 import org.hexic.playermines.world.PlayerMine;
 

@@ -17,6 +17,7 @@ import org.hexic.playermines.world.PlayerMine;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class ActionHandler {
 
@@ -41,45 +42,80 @@ public class ActionHandler {
         return string.split(";")[0];
     }
 
+
+    /**
+     * This method handles when a player clicks on an item that belongs to anything related to this plugin.
+     * This method does various things from upgrading features in a mine, to changing the blocks in a mine.
+     * @param event InventoryClickEvent from the InventoryClickEvent listener.
+     */
     public void doAction(InventoryClickEvent event){
 
 
         this.prevInv = event.getClickedInventory();
-        ClickType clickType = event.getClick();
         Player player = (Player) event.getWhoClicked();
         PlayerMine playerMine = new PlayerMine(player);
-        double lockedPercent = 0;
-        int click = calculatePercentClick(event);
-        ItemStack clickedBlock = event.getCurrentItem();
-        Map<ItemStack, Float> contents = new HashMap<>();
-        for (Map.Entry<Material, Double> entry : new SellPricesConfig().getBlocksWithPrices().entrySet()) {lockedPercent +=  entry.getValue();}
+        ClickType clickType = event.getClick();
 
-        if(Arrays.equals(player.getOpenInventory().getTopInventory().getContents(), new GuiHandler("Blocks-Gui", player).fillGuiWithBlocks().get(0).getContents())) {
-            boolean remove = clickType.isShiftClick();
-            if (remove) {
-                if (click > 10) {
-                    if (clickType.isCreativeAction()) {
-                        contents.put(clickedBlock, 0f);
-                        playerMine.setMineBlocks(contents);
-                        player.sendMessage("Set " + clickedBlock + "to " + 0);
-                    } else {
-                        contents.put(clickedBlock, playerMine.getMineBlockChance(clickedBlock) - click);
-                        playerMine.setMineBlocks(contents);
-                        player.sendMessage("Set " + clickedBlock + "to " + (playerMine.getMineBlockChance(clickedBlock) - click));
-                    }
+
+        if(event.getView().getTitle().equals(new GuiHandler().getDisplayName("Blocks-Gui")) &&  new SellPricesConfig().getBlocksWithChances().containsKey(Objects.requireNonNull(event.getCurrentItem()).getType())) {
+            double lockedPercent = new SellPricesConfig().getTotalLockedChance();
+            double click = calculatePercentClick(event);
+            ItemStack clickedItem = event.getCurrentItem();
+            Map<ItemStack, Float> contents = new HashMap<>();
+
+            /*
+                            Mine-Block Gui Handler
+
+                 Handles when a player is inside the "Block-Gui" and changes the mines blocks accordingly.
+             */
+            //I tried to update this code block, but it seemed to break the block, might try to come back to this to simplify the way this works.
+            if (clickType.isShiftClick()) { // Only works for left and right-click, does not apply to middle-click.
+                if ((playerMine.getMineBlockChance(clickedItem) - click) < 0) {
+                    player.sendMessage("Set " + "to " + 0);
+                    contents.put(clickedItem, 0f);
+                    playerMine.setMineBlocks(contents);
+                    player.openInventory(new GuiHandler("blocks-gui",player).fillGuiWithBlocks().get(0));
                     return;
                 }
-            }
-        }
-        if(playerMine.getMineBlockChance(clickedBlock) + click < 100 - lockedPercent) {
-                contents.put(clickedBlock, playerMine.getMineBlockChance(clickedBlock) - click);
+                player.sendMessage("Set " + "to " + (playerMine.getMineBlockChance(clickedItem) - click));
+                contents.put(clickedItem, (float) (playerMine.getMineBlockChance(clickedItem) - click));
                 playerMine.setMineBlocks(contents);
-                player.sendMessage("Set " + clickedBlock + "to " + (playerMine.getMineBlockChance(clickedBlock) - click));
+                player.openInventory(new GuiHandler("blocks-gui",player).fillGuiWithBlocks().get(0));
+                return;
+            }
+
+            if (click == 0) {//Applies if the player middle-clicks a block.
+                click = (100.0 - lockedPercent);
+                playerMine.getMineBlocks().forEach(mineBlock -> {
+                    if (!new SellPricesConfig().getLockedBlocks().contains(mineBlock.getItem().getType())) {
+                        contents.put(mineBlock.getItem(), 0f);
+                    }
+                });
+                playerMine.setMineBlocks(contents);
+                contents.clear();
+                contents.put(clickedItem, (float) click);
+                playerMine.setMineBlocks(contents);
+                player.sendMessage("Replaced all the mines contents.");
+                player.openInventory(new GuiHandler("blocks-gui",player).fillGuiWithBlocks().get(0));
+                return;
+            }
+
+            if (click < (playerMine.getMineBlocksFreeChance())) {//Applies if the click is a left or right-click, without pressing shift.
+                contents.put(clickedItem, (float) (playerMine.getMineBlockChance(clickedItem) + click));
+                playerMine.setMineBlocks(contents);
+                player.sendMessage("Added block to the mine.");
+                player.openInventory(new GuiHandler("blocks-gui",player).fillGuiWithBlocks().get(0));
+                return;
+            } else {
+                player.sendMessage("That's too high of a percentage. ");
+            }
+            //              End of Block-Gui function.
+
         }
 
-
-
-
+        /*
+                        Various Actions
+         */
         this.config = new LangConfig(player);
         if(getType().toLowerCase().contains("gui")){
             Inventory inventory;
@@ -138,7 +174,7 @@ public class ActionHandler {
             count = (int) playerMine.getMineBlockChance(event.getCurrentItem());
         }else if(clickType.isLeftClick()){
             count = 10;
-        } else {
+        } else if (clickType.isRightClick()){
             count = 1;
         }
        return count;
