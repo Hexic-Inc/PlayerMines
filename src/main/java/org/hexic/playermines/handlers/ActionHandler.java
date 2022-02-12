@@ -28,7 +28,7 @@ public class ActionHandler {
 
     private String string;
     private LangConfig config;
-    private Inventory prevInv;
+    private MenuHandler menuHandler = PlayerMines.getInitalizer().getMenuHandler();
 
     public ActionHandler(String str){
         string = str;
@@ -51,7 +51,6 @@ public class ActionHandler {
     public void doAction(InventoryClickEvent event){
 
 
-        this.prevInv = event.getClickedInventory();
         Player player = (Player) event.getWhoClicked();
         PlayerMine playerMine = new PlayerMine(player);
         ClickType clickType = event.getClick();
@@ -74,12 +73,16 @@ public class ActionHandler {
                     player.sendMessage("Set " + "to " + 0);
                     contents.put(clickedItem, 0f);
                     playerMine.setMineBlocks(contents);
+                    menuHandler.setRecentlyClosed(player,true);
+                    menuHandler.removeInventory(player, event.getView().getTopInventory());
                     player.openInventory(new GuiHandler("blocks-gui",player).fillGuiWithBlocks().get(0));
                     return;
                 }
                 player.sendMessage("Set " + "to " + (playerMine.getMineBlockChance(clickedItem) - click));
                 contents.put(clickedItem, (float) (playerMine.getMineBlockChance(clickedItem) - click));
                 playerMine.setMineBlocks(contents);
+                menuHandler.setRecentlyClosed(player,true);
+                menuHandler.removeInventory(player, event.getView().getTopInventory());
                 player.openInventory(new GuiHandler("blocks-gui",player).fillGuiWithBlocks().get(0));
                 return;
             }
@@ -96,6 +99,8 @@ public class ActionHandler {
                 contents.put(clickedItem, (float) click);
                 playerMine.setMineBlocks(contents);
                 player.sendMessage("Replaced all the mines contents.");
+                menuHandler.setRecentlyClosed(player,true);
+                menuHandler.removeInventory(player, event.getView().getTopInventory());
                 player.openInventory(new GuiHandler("blocks-gui",player).fillGuiWithBlocks().get(0));
                 return;
             }
@@ -104,6 +109,8 @@ public class ActionHandler {
                 contents.put(clickedItem, (float) (playerMine.getMineBlockChance(clickedItem) + click));
                 playerMine.setMineBlocks(contents);
                 player.sendMessage("Added block to the mine.");
+                menuHandler.setRecentlyClosed(player,true);
+                menuHandler.removeInventory(player, event.getView().getTopInventory());
                 player.openInventory(new GuiHandler("blocks-gui",player).fillGuiWithBlocks().get(0));
                 return;
             } else {
@@ -124,6 +131,7 @@ public class ActionHandler {
             } else {
                inventory =  new GuiHandler(getAction(),player).getGui();
             }
+            menuHandler.setRecentlyClosed(player,true);
             player.openInventory(inventory);
 
         } else if (getType().toLowerCase().contains("command")){
@@ -155,6 +163,7 @@ public class ActionHandler {
                 } else {
                     player.sendMessage(new LangConfig(player,Upgrade.valueOf(getAction().toUpperCase())).getPrefixValue("Upgrade-Messages", "General-Message"));
                 }
+                menuHandler.setRecentlyClosed(player,true);
                 new GuiHandler().reloadGui(player,player.getOpenInventory().getTopInventory());
             } else {
                 player.sendMessage(config.getPrefixValue("Upgrade-Messages", "Max-Level", "&cYou've already maxed out that upgrade!"));

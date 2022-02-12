@@ -87,6 +87,20 @@ public class PlayerMine {
 
 
     /**
+     * Create the instance of the players mine for an offline player.
+     * @param player Player that would own the mine.
+     */
+    public PlayerMine(OfflinePlayer player){
+        this.uuid = Bukkit.getOfflinePlayer(player.getName()).getUniqueId().toString();
+        this.econ = PlayerMines.getInitalizer().getEcon();
+        this.config = new YmlConfig();
+        this.ownerJson = new PlayerJson(uuid);
+        this.ownerPlayer = Bukkit.getOfflinePlayer(player.getUniqueId());
+        String[] split = uuid.split("-");
+        this.mineName = "mine" + "-" + split[split.length-1];
+    }
+
+    /**
      * Create a blank instance of a players mine. You will need to manually specify the UUID of the mine using setUuid(uuid).
      */
     public PlayerMine(){
@@ -121,22 +135,22 @@ public class PlayerMine {
         return this;
     }
 
-    public static Player mineOwner(Location location){
+    public static OfflinePlayer mineOwner(Location location){
         String mineLocation = mineLocation(location);
         MinesJson minesJson = new MinesJson(mineLocation);
-        return Bukkit.getPlayer(UUID.fromString(minesJson.getValue("Owner")));
+        return Bukkit.getOfflinePlayer(UUID.fromString(minesJson.getValue("Owner")));
     }
 
     /**
      * Get the Json Mine Location for that players mine.
-     * @param location Minecraft Location.
+     * @param location Minecraft Location from inside an existing player mine.
      * @return Mine Location. EX. "0,0"
      */
     public static String prisonMineLocation(Location location){
         JetsPrisonMinesAPI jetsPrisonMinesAPI = ((JetsPrisonMines) Bukkit.getPluginManager().getPlugin("JetsPrisonMines")).getAPI();
         ArrayList<Mine> mines = jetsPrisonMinesAPI.getMinesByLocation(location);
         int minLocationX = mines.get(0).getMineRegion().getMinPoint().getBlockX();
-        int minLocationY = mines.get(0).getMineRegion().getMinPoint().getBlockY();
+        int minLocationY = mines.get(0).getMineRegion().getMinPoint().getBlockZ();
         int borderSize = getBorderLength();
         int resultX = minLocationX / borderSize;
         int resultY = minLocationY / borderSize;
@@ -148,23 +162,23 @@ public class PlayerMine {
 
     public static String mineLocation(Location location){
         int minLocationX = location.getBlockX();
-        int minLocationY = location.getBlockY();
+        int minLocationZ = location.getBlockZ();
         float borderSize = getBorderLength();
         float resultX;
-        float resultY;
-        if(minLocationX < borderSize){
+        float resultZ;
+        if(Math.abs(minLocationX) > borderSize){
             resultX = minLocationX / borderSize;
         } else {
-            resultX = minLocationX;
+            resultX = 0;
         }
-        if(minLocationY < borderSize){
-            resultY = minLocationY / borderSize;
+        if(Math.abs(minLocationZ) > borderSize){
+            resultZ = minLocationZ / borderSize;
         } else {
-            resultY = minLocationY;
+            resultZ = 0;
         }
         int mineSpace = 3;
         int totalX = Math.round( resultX / mineSpace);
-        int totalY = Math.round( resultY / mineSpace);
+        int totalY = Math.round( resultZ / mineSpace);
         return totalX + "," + totalY;
     }
 

@@ -2,10 +2,7 @@ package org.hexic.playermines.managers.commands;
 
 
 import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.command.*;
 import org.bukkit.entity.Player;
 import org.hexic.playermines.PlayerMines;
 import org.hexic.playermines.commands.player.Create;
@@ -16,8 +13,9 @@ import org.hexic.playermines.handlers.GuiHandler;
 import org.hexic.playermines.world.PlayerMine;
 
 import java.util.ArrayList;
+import java.util.List;
 
-public class CommandManager implements CommandExecutor {
+public class CommandManager implements TabExecutor {
 
     private ArrayList<SubCommand> subcommands = new ArrayList<>();
 
@@ -84,5 +82,17 @@ public class CommandManager implements CommandExecutor {
     }
 
 
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+
+        if(args.length == 1){
+            List<String> commands = new ArrayList<>();
+            subcommands.forEach(cmd -> {
+                commands.add(cmd.getName());
+            });
+            return commands;
+        }
+        return null;
+    }
 }
 

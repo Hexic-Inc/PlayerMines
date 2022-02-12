@@ -12,6 +12,7 @@ import org.hexic.playermines.data.yml.MineCrateConfig;
 import org.hexic.playermines.data.yml.SellPricesConfig;
 import org.hexic.playermines.data.yml.YmlConfig;
 import org.hexic.playermines.handlers.CoolDownHandler;
+import org.hexic.playermines.handlers.MenuHandler;
 import org.hexic.playermines.listeners.*;
 import org.hexic.playermines.managers.commands.CommandManager;
 import org.hexic.playermines.managers.data.DataManager;
@@ -39,6 +40,7 @@ public class Initializer {
     private static Economy econ = null;
     private static Permission perms = null;
     private CoolDownHandler coolDownHandler;
+    private MenuHandler menuHandler;
 
 
     public Initializer(JavaPlugin plugin){
@@ -54,10 +56,13 @@ public class Initializer {
 
     public CoolDownHandler getCoolDownHandler(){return coolDownHandler;}
 
+    public MenuHandler getMenuHandler() {return menuHandler;}
+
     public void initAll(){
         initEcon();
         initPerms();
         initData();
+        initMenuHandler();
         initListeners();
         initCommands();
         loadCoolDownHandler();
@@ -83,6 +88,8 @@ public class Initializer {
         getServer().getPluginManager().registerEvents(new GuiClick(), plugin);
         getServer().getPluginManager().registerEvents(new MineCrate(), plugin);
         getServer().getPluginManager().registerEvents(new WorldJoin(),plugin);
+        getServer().getPluginManager().registerEvents(new GuiClose(), plugin);
+        getServer().getPluginManager().registerEvents(new GuiOpen(), plugin);
         //getServer().getPluginManager().registerEvents(new PlayerTP(), plugin);
         /*for(Class<?> clazz : new Reflections(plugin.getClass().getPackage().getName() + ".listeners").getSubTypesOf(Listener.class) ){
             try{
@@ -109,6 +116,10 @@ public class Initializer {
             new MineCrateConfig().createConfig();
             new SellPricesConfig().createDefaultBlocks();
         }
+    }
+
+    private void initMenuHandler(){
+        menuHandler = new MenuHandler();
     }
 
     private boolean initPerms(){

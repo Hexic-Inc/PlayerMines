@@ -94,7 +94,6 @@ public class YmlConfig {
         config.setListValue(section, "Berserk_Count", "5");
         config.setListValue(section, "Mine_Multiplier", "0.1 * level");
     }
-
     public Map<String, String> getSection(String section){
         ConfigurationSection configurationSection = config.getConfigurationSection(section);
         Map<String, String> tempMap = new HashMap<>();

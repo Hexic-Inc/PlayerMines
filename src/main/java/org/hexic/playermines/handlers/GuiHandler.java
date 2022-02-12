@@ -198,8 +198,14 @@ public class GuiHandler {
                     }
                 }
             }
-            if(config.getValue(blockSection + ".Lore").toLowerCase().contains("$mine-contents")){
-                lore = addMinePercentages().toArray(new String[0]);
+            if(config.getValue(blockSection + ".Lore").toLowerCase().contains("$mine-block") || config.getValue(blockSection + ".Lore").toLowerCase().contains("$block-percent")){
+                String rawLore = config.getValue(blockSection + ".Lore");
+                ArrayList<String> lore2 = new ArrayList<>();
+                PlayerMine playerMine = new PlayerMine(player);
+                playerMine.getMineBlocks().forEach(mineBlock ->{
+                    lore2.add(translate( rawLore.replace("$mine-block", mineBlock.getItem().getType() + "").replace("$block-percent",  playerMine.getMineBlockChance(mineBlock.getItem()) + "")));
+                });
+                lore = lore2.toArray(new String[0]);
             }
         }
         itemMeta.setDisplayName(translate(config.getValue(blockSection + ".Display_Name")));
@@ -289,14 +295,6 @@ public class GuiHandler {
         return pages;
     }
 
-    public ArrayList<String> addMinePercentages(){
-        ArrayList<String> lore = new ArrayList<>();
-        PlayerMine playerMine = new PlayerMine(player);
-        playerMine.getMineBlocks().forEach(mineBlock ->{
-            lore.add(translate("&c" + mineBlock.getItem().getType() + " -> " + playerMine.getMineBlockChance(mineBlock.getItem()) + "%"));
-        });
-        return  lore;
-    }
 
     public void addNavigationBar(){
 
