@@ -1,21 +1,17 @@
 package org.hexic.playermines.listeners;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerLoginEvent;
-import org.bukkit.scheduler.BukkitRunnable;
-import org.hexic.playermines.PlayerMines;
-import org.hexic.playermines.world.PlayerMine;
+import org.hexic.playermines.Main;
+import org.hexic.playermines.PlayerMine.PlayerMine;
 
 public class WorldJoin implements Listener {
 
     @EventHandler
     public void onWorldJoin(PlayerJoinEvent e) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(PlayerMines.getInitalizer().getPlugin(), new Runnable() {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getInitalizer().getPlugin(), new Runnable() {
             @Override
             public void run() {
                 if (e.getPlayer().getLocation().getWorld() == PlayerMine.getMineWorld()) {

@@ -21,7 +21,11 @@ public class MenuHandler {
     }
 
     public void addCount(Player player, int count){
-        counts.put(player,count);
+        if(counts.containsKey(player)){
+            counts.replace(player,counts.get(player) + count);
+        } else {
+            counts.put(player, count);
+        }
     }
 
     public void addPlayer(Player player, Inventory firstInv){
@@ -44,6 +48,7 @@ public class MenuHandler {
         }
     }
 
+
     public boolean hasRecentlyClosed(Player player){
         return recentlyClosed.get(player);
     }
@@ -51,6 +56,7 @@ public class MenuHandler {
     public void setRecentlyClosed(Player player, boolean value){
         this.recentlyClosed.replace(player,value);
     }
+
 
     public ArrayList<Inventory> getInventories(Player player){return inventories.get(player);}
 
@@ -61,8 +67,8 @@ public class MenuHandler {
     public int getCount(Player player){return counts.get(player);}
 
     public void removeInventory(Player player, Inventory inventory){
-        this.inventories.get(player).remove(inventory.getContents().clone());
-        removeCount(player, 1);
+       // this.inventories.get(player).remove(inventory);
+       // removeCount(player, 1);
     }
 
     public void removeCount(Player player, int count){

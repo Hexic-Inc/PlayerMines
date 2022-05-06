@@ -3,7 +3,7 @@ package org.hexic.playermines.commands.player;
 import org.bukkit.entity.Player;
 import org.hexic.playermines.data.yml.LangConfig;
 import org.hexic.playermines.managers.commands.SubCommand;
-import org.hexic.playermines.world.PlayerMine;
+import org.hexic.playermines.PlayerMine.PlayerMine;
 
 public class Tp extends SubCommand {
     @Override
@@ -18,7 +18,7 @@ public class Tp extends SubCommand {
 
     @Override
     public void perform(Player player, String[] args) {
-        LangConfig lang = new LangConfig(player);
+        LangConfig lang = new LangConfig();
         if (args.length < 2) {
             if(new PlayerMine(player).hasMine()){
                 new PlayerMine(player).teleport(player);

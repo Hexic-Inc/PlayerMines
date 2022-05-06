@@ -1,7 +1,7 @@
 package org.hexic.playermines.data.yml;
 
 import org.bukkit.Material;
-import org.hexic.playermines.PlayerMines;
+import org.hexic.playermines.Main;
 import org.hexic.playermines.managers.data.Config;
 
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ public class SellPricesConfig {
      * Load the SellPrices Config
      */
     public SellPricesConfig(){
-        config = PlayerMines.getInitalizer().getDataManager().getConfig("SellPrices.yml");
+        config = Main.getInitalizer().getDataManager().getConfig("SellPrices.yml");
     }
 
     /**

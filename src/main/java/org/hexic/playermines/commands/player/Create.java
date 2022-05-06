@@ -3,7 +3,7 @@ package org.hexic.playermines.commands.player;
 import org.bukkit.entity.Player;
 import org.hexic.playermines.data.yml.LangConfig;
 import org.hexic.playermines.managers.commands.SubCommand;
-import org.hexic.playermines.world.PlayerMine;
+import org.hexic.playermines.PlayerMine.PlayerMine;
 
 public class Create extends SubCommand {
     @Override

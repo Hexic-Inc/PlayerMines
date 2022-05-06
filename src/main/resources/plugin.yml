@@ -1,14 +1,9 @@
-main: org.hexic.playermines.PlayerMines
+main: org.hexic.playermines.Main
 name: PlayerMines
-version: 0.6.1
+version: 0.6.2
 api-version: 1.16
 author: Hexic
-depend:
-  - WorldEdit
-  - WorldBorderAPI
-  - WorldGuard
-  - JetsPrisonMines
-  - UltraPrisonCore
+depend: [WorldEdit, WorldBorderAPI, WorldGuard, JetsPrisonMines, UltraPrisonCore]
 description: Ability to create a private mine per player.
 commands:
   PlayerMine:

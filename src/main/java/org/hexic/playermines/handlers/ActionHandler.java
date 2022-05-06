@@ -1,20 +1,18 @@
 package org.hexic.playermines.handlers;
 
 import me.drawethree.ultraprisoncore.UltraPrisonCore;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.hexic.playermines.PlayerMines;
+import org.hexic.playermines.Main;
+import org.hexic.playermines.PlayerMine.Upgrade;
 import org.hexic.playermines.data.yml.LangConfig;
 import org.hexic.playermines.data.yml.SellPricesConfig;
-import org.hexic.playermines.world.Upgrade;
-import org.hexic.playermines.world.PlayerMine;
+import org.hexic.playermines.PlayerMine.PlayerMine;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -28,7 +26,7 @@ public class ActionHandler {
 
     private String string;
     private LangConfig config;
-    private MenuHandler menuHandler = PlayerMines.getInitalizer().getMenuHandler();
+    private MenuHandler menuHandler = Main.getInitalizer().getMenuHandler();
 
     public ActionHandler(String str){
         string = str;
@@ -40,6 +38,87 @@ public class ActionHandler {
 
     public String getType(){
         return string.split(";")[0];
+    }
+
+    private void mineBlockHandler(InventoryClickEvent event){
+        double lockedPercent = new SellPricesConfig().getTotalLockedChance();
+        double click = calculatePercentClick(event);
+        ItemStack clickedItem = event.getCurrentItem();
+        Map<ItemStack, Float> contents = new HashMap<>();
+
+        Player player = (Player) event.getWhoClicked();
+        PlayerMine playerMine = new PlayerMine(player);
+        ClickType clickType = event.getClick();
+
+            /*
+                            Mine-Block Gui Handler
+
+                 Handles when a player is inside the "Block-Gui" and changes the mines blocks accordingly.
+             */
+        //I tried to update this code block, but it seemed to break the block, might try to come back to this to simplify the way this works.
+        if (clickType.isShiftClick()) { // Only works for left and right-click, does not apply to middle-click.
+            if ((playerMine.getMineBlockChance(clickedItem) - click) < 0) {
+                player.sendMessage("Set " + "to " + 0);
+                contents.put(clickedItem, 0f);
+                playerMine.setMineBlocks(contents);
+                menuHandler.setRecentlyClosed(player,true);
+                menuHandler.removeInventory(player, event.getView().getTopInventory());
+                player.openInventory(new GuiHandler("blocks-gui",player).fillGuiWithBlocks().get(0));
+                return;
+            }
+            player.sendMessage("Set " + "to " + (playerMine.getMineBlockChance(clickedItem) - click));
+            contents.put(clickedItem, (float) (playerMine.getMineBlockChance(clickedItem) - click));
+            playerMine.setMineBlocks(contents);
+            menuHandler.setRecentlyClosed(player,true);
+            menuHandler.removeInventory(player, event.getView().getTopInventory());
+            player.openInventory(new GuiHandler("blocks-gui",player).fillGuiWithBlocks().get(0));
+            return;
+        }
+
+        if (click == 0) {//Applies if the player middle-clicks a block.
+            click = (100.0 - lockedPercent);
+            playerMine.getMineBlocks().forEach(mineBlock -> {
+                if (!new SellPricesConfig().getLockedBlocks().contains(mineBlock.getItem().getType())) {
+                    contents.put(mineBlock.getItem(), 0f);
+                }
+            });
+            playerMine.setMineBlocks(contents);
+            contents.clear();
+            contents.put(clickedItem, (float) click);
+            playerMine.setMineBlocks(contents);
+            if(new LangConfig(player).getPrefixValue("Block-Messages", "Replace-All", "&cReplaced all blocks with $block$").contains("$block$")){
+                assert clickedItem != null;
+                player.sendMessage(new LangConfig(player).getPrefixValue("Block-Messages", "Replace-All", "&cReplaced all blocks with $block$").replace("$block$",clickedItem.getType().toString()));
+            } else {
+                player.sendMessage(new LangConfig(player).getPrefixValue("Block-Messages", "Replace-All", "&cReplaced all blocks with $block$"));
+            }
+            menuHandler.setRecentlyClosed(player,true);
+            menuHandler.removeInventory(player, event.getView().getTopInventory());
+            player.openInventory(new GuiHandler("blocks-gui",player).fillGuiWithBlocks().get(0));
+            return;
+        }
+
+        if (click < (playerMine.getMineBlocksFreeChance())) {//Applies if the click is a left or right-click, without pressing shift.
+            contents.put(clickedItem, (float) (playerMine.getMineBlockChance(clickedItem) + click));
+            playerMine.setMineBlocks(contents);
+            String message = new LangConfig(player).getPrefixValue("Block-Messages", "Replace-Some", "&cReplaced $replaced$% of blocks with $block$");
+            if(message.contains("$block$")){
+                assert clickedItem != null;
+                message = message.replace("$block$",clickedItem.getType().toString());
+            }
+            if(message.contains("$replaced$")){
+                message = message.replace("$replaced$", click + "");
+            }
+            player.sendMessage(message);
+            menuHandler.setRecentlyClosed(player,true);
+            menuHandler.removeInventory(player, event.getView().getTopInventory());
+            player.openInventory(new GuiHandler("blocks-gui",player).fillGuiWithBlocks().get(0));
+            return;
+        } else {
+            player.sendMessage(new LangConfig(player).getPrefixValue("Block-Messages","Too-Much","&cThat's too many blocks to have in your mine!"));
+        }
+        //              End of Block-Gui function.
+
     }
 
 
@@ -57,73 +136,13 @@ public class ActionHandler {
 
 
         if(event.getView().getTitle().equals(new GuiHandler().getDisplayName("Blocks-Gui")) &&  new SellPricesConfig().getBlocksWithChances().containsKey(Objects.requireNonNull(event.getCurrentItem()).getType())) {
-            double lockedPercent = new SellPricesConfig().getTotalLockedChance();
-            double click = calculatePercentClick(event);
-            ItemStack clickedItem = event.getCurrentItem();
-            Map<ItemStack, Float> contents = new HashMap<>();
-
-            /*
-                            Mine-Block Gui Handler
-
-                 Handles when a player is inside the "Block-Gui" and changes the mines blocks accordingly.
-             */
-            //I tried to update this code block, but it seemed to break the block, might try to come back to this to simplify the way this works.
-            if (clickType.isShiftClick()) { // Only works for left and right-click, does not apply to middle-click.
-                if ((playerMine.getMineBlockChance(clickedItem) - click) < 0) {
-                    player.sendMessage("Set " + "to " + 0);
-                    contents.put(clickedItem, 0f);
-                    playerMine.setMineBlocks(contents);
-                    menuHandler.setRecentlyClosed(player,true);
-                    menuHandler.removeInventory(player, event.getView().getTopInventory());
-                    player.openInventory(new GuiHandler("blocks-gui",player).fillGuiWithBlocks().get(0));
-                    return;
-                }
-                player.sendMessage("Set " + "to " + (playerMine.getMineBlockChance(clickedItem) - click));
-                contents.put(clickedItem, (float) (playerMine.getMineBlockChance(clickedItem) - click));
-                playerMine.setMineBlocks(contents);
-                menuHandler.setRecentlyClosed(player,true);
-                menuHandler.removeInventory(player, event.getView().getTopInventory());
-                player.openInventory(new GuiHandler("blocks-gui",player).fillGuiWithBlocks().get(0));
-                return;
-            }
-
-            if (click == 0) {//Applies if the player middle-clicks a block.
-                click = (100.0 - lockedPercent);
-                playerMine.getMineBlocks().forEach(mineBlock -> {
-                    if (!new SellPricesConfig().getLockedBlocks().contains(mineBlock.getItem().getType())) {
-                        contents.put(mineBlock.getItem(), 0f);
-                    }
-                });
-                playerMine.setMineBlocks(contents);
-                contents.clear();
-                contents.put(clickedItem, (float) click);
-                playerMine.setMineBlocks(contents);
-                player.sendMessage("Replaced all the mines contents.");
-                menuHandler.setRecentlyClosed(player,true);
-                menuHandler.removeInventory(player, event.getView().getTopInventory());
-                player.openInventory(new GuiHandler("blocks-gui",player).fillGuiWithBlocks().get(0));
-                return;
-            }
-
-            if (click < (playerMine.getMineBlocksFreeChance())) {//Applies if the click is a left or right-click, without pressing shift.
-                contents.put(clickedItem, (float) (playerMine.getMineBlockChance(clickedItem) + click));
-                playerMine.setMineBlocks(contents);
-                player.sendMessage("Added block to the mine.");
-                menuHandler.setRecentlyClosed(player,true);
-                menuHandler.removeInventory(player, event.getView().getTopInventory());
-                player.openInventory(new GuiHandler("blocks-gui",player).fillGuiWithBlocks().get(0));
-                return;
-            } else {
-                player.sendMessage("That's too high of a percentage. ");
-            }
-            //              End of Block-Gui function.
-
+            mineBlockHandler(event);
         }
 
         /*
                         Various Actions
          */
-        this.config = new LangConfig(player);
+        this.config = new LangConfig();
         if(getType().toLowerCase().contains("gui")){
             Inventory inventory;
             if (getAction().contains("blocks")){
@@ -141,12 +160,12 @@ public class ActionHandler {
             }
 
             if(getAction().toUpperCase().contains(Action.RESET.toString())){
-                if(PlayerMines.getInitalizer().getCoolDownHandler().isPlayerInCoolDown(player)){
-                    player.sendMessage(config.getPrefixValue("reset", "Cool_Down", "&cYou must wait $time seconds to reset your mine.").replace("$time", PlayerMines.getInitalizer().getCoolDownHandler().getTimeLeft(player) + ""));
+                if(Main.getInitalizer().getCoolDownHandler().isPlayerInCoolDown(player)){
+                    player.sendMessage(config.getPrefixValue("reset", "Cool_Down", "&cYou must wait $time$ seconds to reset your mine.").replace("$time$", Main.getInitalizer().getCoolDownHandler().getTimeLeft(player) + ""));
                     return;
                 }
                 playerMine.reset();
-                PlayerMines.getInitalizer().getCoolDownHandler().addPlayerToMap(player,new PlayerMine(player).getResetTime());
+                Main.getInitalizer().getCoolDownHandler().addPlayerToMap(player,new PlayerMine(player).getResetTime());
                 player.sendMessage(config.getPrefixValue(Action.RESET.toString().toLowerCase(), "Reset_Message","&cMine has been reset!"));
             }
 
@@ -158,8 +177,8 @@ public class ActionHandler {
             }
 
             if(playerMine.addPurchasedUpgrade(Upgrade.valueOf(getAction().toUpperCase()),levelToAdd)){
-                if(new LangConfig(player, Upgrade.valueOf(getAction().toUpperCase())).getValue("Upgrade-Messages", "General-Message", "&c$upgrade Upgrade cost $upgrade_cost $upgrade_currency for $levels_added level(s).").contains("$levels_added")){
-                    player.sendMessage(new LangConfig(player,Upgrade.valueOf(getAction().toUpperCase())).getPrefixValue("Upgrade-Messages", "General-Message").replace("$levels_added", levelToAdd + ""));
+                if(new LangConfig(player, Upgrade.valueOf(getAction().toUpperCase())).getValue("Upgrade-Messages", "General-Message", "&c$upgrade$ Upgrade cost $upgrade_cost$ $upgrade_currency$ for $levels_added$ level(s).").contains("$levels_added$")){
+                    player.sendMessage(new LangConfig(player,Upgrade.valueOf(getAction().toUpperCase())).getPrefixValue("Upgrade-Messages", "General-Message").replace("$levels_added$", levelToAdd + ""));
                 } else {
                     player.sendMessage(new LangConfig(player,Upgrade.valueOf(getAction().toUpperCase())).getPrefixValue("Upgrade-Messages", "General-Message"));
                 }
@@ -198,7 +217,7 @@ public class ActionHandler {
         } else if (pMine.getUpgradeType(upgrade).toLowerCase().contains("tokens")){
             bal = UltraPrisonCore.getInstance().getTokens().getApi().getPlayerTokens(player);
         } else if (pMine.getUpgradeType(upgrade).toLowerCase().contains("money")) {
-            bal = (long) PlayerMines.getInitalizer().getEcon().getBalance(player);
+            bal = (long) Main.getInitalizer().getEcon().getBalance(player);
         }
         //Max Amount
         if(clickType.isShiftClick() && clickType.isLeftClick() || clickType.isShiftClick() && clickType.isRightClick()){

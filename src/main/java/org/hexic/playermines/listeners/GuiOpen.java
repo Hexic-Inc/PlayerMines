@@ -5,13 +5,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.hexic.playermines.PlayerMines;
+import org.hexic.playermines.Main;
 import org.hexic.playermines.handlers.GuiHolder;
 import org.hexic.playermines.handlers.MenuHandler;
 
 public class GuiOpen implements Listener {
 
-    private MenuHandler menuHandler = PlayerMines.getInitalizer().getMenuHandler();
+    private MenuHandler menuHandler = Main.getInitalizer().getMenuHandler();
 
     @EventHandler
     public void GuiOpen(InventoryOpenEvent e){

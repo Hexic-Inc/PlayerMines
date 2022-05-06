@@ -7,7 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.hexic.playermines.handlers.MineCrateHandler;
-import org.hexic.playermines.world.PlayerMine;
+import org.hexic.playermines.PlayerMine.PlayerMine;
 
 import java.util.Objects;
 
@@ -23,10 +23,11 @@ public class MineCrate implements Listener {
         }
         if (Objects.requireNonNull(e.getClickedBlock()).getType() == new MineCrateHandler().getMaterial()){
             if (e.getAction().equals(Action.RIGHT_CLICK_BLOCK) || e.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
-                if (new PlayerMine(e.getPlayer()).getPrisonMine().isLocationInRegion(e.getClickedBlock().getLocation())) {
+                PlayerMine mineInUse = new PlayerMine(PlayerMine.mineOwner(e.getPlayer().getLocation()));
+                if (mineInUse.getPrisonMine().isLocationInRegion(e.getClickedBlock().getLocation())) {
                     e.getClickedBlock().setType(Material.AIR);
                     new MineCrateHandler().giveRewards(e.getPlayer());
-                    new PlayerMine(e.getPlayer().getUniqueId().toString()).removeHologram(e.getClickedBlock().getLocation(), 1);
+                    mineInUse.removeHologram(e.getClickedBlock().getLocation(), 1);
                 }
             }
         }

@@ -2,7 +2,7 @@ package org.hexic.playermines.data.yml;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.hexic.playermines.PlayerMines;
+import org.hexic.playermines.Main;
 import org.hexic.playermines.managers.data.Config;
 
 import java.util.HashMap;
@@ -15,7 +15,7 @@ public class MineCrateConfig {
     private static Config config;
 
     public MineCrateConfig(){
-        config = PlayerMines.getInitalizer().getDataManager().getConfig("MineCrate.yml");
+        config = Main.getInitalizer().getDataManager().getConfig("MineCrate.yml");
         config.getKeys();
     }
 

@@ -29,6 +29,13 @@ public class PlayerJson {
         this.header = header;
     }
 
+    /**
+     * Remove the players saved data
+     */
+    public void remove(){
+        pJson.remove(header);
+    }
+
     public void setValue(String key, Boolean value){
         if(this.exists()) {
             for (Map.Entry<String, String> entry : getData().entrySet()) {
@@ -87,9 +94,7 @@ public class PlayerJson {
             FileReader reader = new FileReader(file);
             Map<String, ?> map = Json.GSON.fromJson(reader, Map.class);
             reader.close();
-            String string = map.get(header).toString();
-            Map<String,String> newMap = toMap(string);
-            return newMap;
+            return toMap(map.get(header).toString());
         } catch(IOException e){
             e.printStackTrace();
         }
@@ -102,9 +107,7 @@ public class PlayerJson {
             FileReader reader = new FileReader(file);
             Map<String, ?> map = Json.GSON.fromJson(reader, Map.class);
             reader.close();
-            String string = map.get(header).toString();
-            Map<String,String> newMap = toMap(string);
-            return newMap.get(key);
+            return toMap(map.get(header).toString()).get(key);
         } catch(IOException e){
             e.printStackTrace();
         }

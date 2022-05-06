@@ -1,12 +1,9 @@
 package org.hexic.playermines.data.yml;
 
-import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
-import org.hexic.playermines.PlayerMines;
+import org.hexic.playermines.Main;
 import org.hexic.playermines.managers.data.Config;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 public class GuiConfig {
@@ -15,7 +12,7 @@ public class GuiConfig {
     private static Config config;
 
     public GuiConfig(){
-        config = PlayerMines.getInitalizer().getDataManager().getConfig("Gui.yml");
+        config = Main.getInitalizer().getDataManager().getConfig("Gui.yml");
         config.getKeys();
     }
 
@@ -154,15 +151,12 @@ public class GuiConfig {
     }
 
 
-
-
-
     private void createSize(){
         String section = "size";
         config.createSection(section);
         config.setListValue(section, "Item", "end_stone");
         config.setListValue(section, "Display_Name", "&cIncrease Size");
-        config.setListValue(section, "Lore", "&6Money Multiplier buff for the mine.;&c$upgrade_level / $upgrade_max; &c$upgrade_cost $upgrade_currency");
+        config.setListValue(section, "Lore", "&6Increase the perimeter size of the mine by 1 block.;&c$upgrade_level / $upgrade_max; &cCost $upgrade_cost $upgrade_currency");
         config.setListValue(section, "Action", "upgrade;size");
     }
     private void createRegen(){
@@ -170,7 +164,7 @@ public class GuiConfig {
         config.createSection(section);
         config.setListValue(section, "Item", "quartz");
         config.setListValue(section, "Display_Name", "&cReset Time");
-        config.setListValue(section, "Lore", "&6Money Multiplier buff for the mine.;&c$upgrade_level / $upgrade_max; &c$upgrade_cost $upgrade_currency");
+        config.setListValue(section, "Lore", "&6Reduce reset time by 1 second per level.;&c$upgrade_level / $upgrade_max; &cCost $upgrade_cost $upgrade_currency");
         config.setListValue(section, "Action", "upgrade;regen_time");
     }
 
@@ -179,7 +173,7 @@ public class GuiConfig {
         config.createSection(section);
         config.setListValue(section, "Item", "diamond");
         config.setListValue(section, "Display_Name", "&cMoney Multiplier");
-        config.setListValue(section, "Lore", "&6Money Multiplier buff for the mine.;&c$upgrade_level / $upgrade_max; &c$upgrade_cost $upgrade_currency");
+        config.setListValue(section, "Lore", "&6Increase the sell multiplier for the mine.;&c$upgrade_level / $upgrade_max; &cCost $upgrade_cost $upgrade_currency");
         config.setListValue(section, "Action", "upgrade;mine_multiplier");
     }
 
@@ -188,7 +182,7 @@ public class GuiConfig {
         config.createSection(section);
         config.setListValue(section, "Item", "sunflower");
         config.setListValue(section, "Display_Name", "&cToken Finder");
-        config.setListValue(section, "Lore", "&6Money Multiplier buff for the mine.;&c$upgrade_level / $upgrade_max; &c$upgrade_cost $upgrade_currency");
+        config.setListValue(section, "Lore", "&6Gain more tokens per mine reset.;&c$upgrade_level / $upgrade_max; &cCost $upgrade_cost $upgrade_currency");
         config.setListValue(section, "Action", "upgrade;etoken_finder");
     }
 
@@ -197,7 +191,7 @@ public class GuiConfig {
         config.createSection(section);
         config.setListValue(section, "Item", "paper");
         config.setListValue(section, "Display_Name", "&cPlayer Tax");
-        config.setListValue(section, "Lore", "&6Money Multiplier buff for the mine.;&c$upgrade_level / $upgrade_max; &c$upgrade_cost $upgrade_currency");
+        config.setListValue(section, "Lore", "&6Tax players money for mining at your mine.;&c$upgrade_level / $upgrade_max; &cCost $upgrade_cost $upgrade_currency");
         config.setListValue(section, "Action", "upgrade;tax_price");
     }
 
@@ -206,7 +200,7 @@ public class GuiConfig {
         config.createSection(section);
         config.setListValue(section, "Item", "book");
         config.setListValue(section, "Display_Name", "&cPlayer Rent");
-        config.setListValue(section, "Lore", "&6Money Multiplier buff for the mine.;&c$upgrade_level / $upgrade_max; &c$upgrade_cost $upgrade_currency");
+        config.setListValue(section, "Lore", "&6Charge your friends money for mining at your mine.;&c$upgrade_level / $upgrade_max; &cCost $upgrade_cost $upgrade_currency");
         config.setListValue(section, "Action", "upgrade;rent_price");
     }
 
@@ -215,7 +209,7 @@ public class GuiConfig {
         config.createSection(section);
         config.setListValue(section, "Item", "chest");
         config.setListValue(section, "Display_Name", "&cMinecrate Finder");
-        config.setListValue(section, "Lore", "&6Money Multiplier buff for the mine.;&c$upgrade_level / $upgrade_max; &c$upgrade_cost $upgrade_currency");
+        config.setListValue(section, "Lore", "&6Find unique crates while mining.;&c$upgrade_level / $upgrade_max; &cCost $upgrade_cost $upgrade_currency");
         config.setListValue(section, "Action", "upgrade;minecrate_finder");
     }
 
@@ -224,7 +218,7 @@ public class GuiConfig {
         config.createSection(section);
         config.setListValue(section, "Item", "nether_star");
         config.setListValue(section, "Display_Name", "&cUpgrade Finder");
-        config.setListValue(section, "Lore", "&6Money Multiplier buff for the mine.;&c$upgrade_level / $upgrade_max; &c$upgrade_cost $upgrade_currency");
+        config.setListValue(section, "Lore", "&6Find upgrades when the mine resets.;&c$upgrade_level / $upgrade_max; &cCost $upgrade_cost $upgrade_currency");
         config.setListValue(section, "Action", "upgrade;upgrade_finder");
     }
 
@@ -233,7 +227,7 @@ public class GuiConfig {
         config.createSection(section);
         config.setListValue(section, "Item", "diamond_pickaxe");
         config.setListValue(section, "Display_Name", "&cBerserk");
-        config.setListValue(section, "Lore", "&6Money Multiplier buff for the mine.;&c$upgrade_level / $upgrade_max; &c$upgrade_cost $upgrade_currency");
+        config.setListValue(section, "Lore", "&6Multiplies all the upgrades by 1.68 per Berserk level.;&c$upgrade_level / &cCost $upgrade_cost $upgrade_currency");
         config.setListValue(section, "Action", "upgrade;berserk");
     }
 
@@ -242,7 +236,7 @@ public class GuiConfig {
         config.createSection(section);
         config.setListValue(section, "Item", "emerald");
         config.setListValue(section, "Display_Name", "&cGem Dropper");
-        config.setListValue(section, "Lore", "&6Money Multiplier buff for the mine.;&c$upgrade_level / $upgrade_max; &c$upgrade_cost $upgrade_currency");
+        config.setListValue(section, "Lore", "&6Find gems when the mine resets.;&c$upgrade_level / $upgrade_max; &cCost $upgrade_cost $upgrade_currency");
         config.setListValue(section, "Action", "upgrade;gem_drops");
     }
 

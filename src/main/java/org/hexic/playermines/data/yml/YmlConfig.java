@@ -1,7 +1,7 @@
 package org.hexic.playermines.data.yml;
 
 import org.bukkit.configuration.ConfigurationSection;
-import org.hexic.playermines.PlayerMines;
+import org.hexic.playermines.Main;
 import org.hexic.playermines.managers.data.Config;
 
 import java.util.HashMap;
@@ -12,7 +12,7 @@ public class YmlConfig {
     private static Config config;
 
     public YmlConfig(){
-        config = PlayerMines.getInitalizer().getDataManager().getConfig("Config.yml");
+        config = Main.getInitalizer().getDataManager().getConfig("Config.yml");
     }
 
     public void createConfigs(){

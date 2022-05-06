@@ -7,12 +7,11 @@ import me.drawethree.ultraprisoncore.tokens.api.UltraPrisonTokensAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.hexic.playermines.PlayerMines;
+import org.hexic.playermines.Main;
 import org.hexic.playermines.data.yml.LangConfig;
 import org.hexic.playermines.data.yml.MineCrateConfig;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 public class MineCrateHandler {
@@ -55,7 +54,7 @@ public class MineCrateHandler {
                         UltraPrisonTokensAPI ultraPrisonTokensAPI = UltraPrisonCore.getInstance().getTokens().getApi();
                         ultraPrisonTokensAPI.addTokens(player, Integer.parseInt(mineCrateConfig.getValue(section, "Action")), ReceiveCause.GIVE);
                     } else if (mineCrateConfig.getValue(section, "Type").contains("dollars")) {
-                        PlayerMines.getInitalizer().getEcon().depositPlayer(player, Integer.parseInt(mineCrateConfig.getValue(section, "Action")));
+                        Main.getInitalizer().getEcon().depositPlayer(player, Integer.parseInt(mineCrateConfig.getValue(section, "Action")));
                     }
                     if(mineCrateConfig.sectionContainsKey(section, "Message")){
                         player.sendMessage(new LangConfig().addPrefixValue(mineCrateConfig.getValue(section, "Message")));

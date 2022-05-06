@@ -1,12 +1,12 @@
 package org.hexic.playermines.init;
 
+import me.drawethree.ultraprisoncore.UltraPrisonCore;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
-import org.bukkit.event.Listener;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.checkerframework.framework.qual.SubtypeOf;
 import org.hexic.playermines.data.yml.GuiConfig;
 import org.hexic.playermines.data.yml.MineCrateConfig;
 import org.hexic.playermines.data.yml.SellPricesConfig;
@@ -16,20 +16,11 @@ import org.hexic.playermines.handlers.MenuHandler;
 import org.hexic.playermines.listeners.*;
 import org.hexic.playermines.managers.commands.CommandManager;
 import org.hexic.playermines.managers.data.DataManager;
-import org.hexic.playermines.world.PlayerMine;
-import org.reflections.Reflections;
-import org.reflections.scanners.ResourcesScanner;
-import org.reflections.scanners.SubTypesScanner;
-import org.reflections.util.ClasspathHelper;
-import org.reflections.util.ConfigurationBuilder;
-import org.reflections.util.FilterBuilder;
+import org.hexic.playermines.PlayerMine.PlayerMine;
 
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.awt.*;
+import java.util.Objects;
 
 import static org.bukkit.Bukkit.getServer;
 
@@ -46,6 +37,8 @@ public class Initializer {
     public Initializer(JavaPlugin plugin){
         this.plugin = plugin;
         this.dataManager = new DataManager(this.plugin);
+        //In order for Autosell regions to work properly, they must be reloaded when the plugin starts
+        UltraPrisonCore.getInstance().getAutoSell().reload();
     }
 
     public DataManager getDataManager(){return dataManager;}
@@ -88,8 +81,8 @@ public class Initializer {
         getServer().getPluginManager().registerEvents(new GuiClick(), plugin);
         getServer().getPluginManager().registerEvents(new MineCrate(), plugin);
         getServer().getPluginManager().registerEvents(new WorldJoin(),plugin);
-        getServer().getPluginManager().registerEvents(new GuiClose(), plugin);
-        getServer().getPluginManager().registerEvents(new GuiOpen(), plugin);
+        //getServer().getPluginManager().registerEvents(new GuiClose(), plugin);
+        //getServer().getPluginManager().registerEvents(new GuiOpen(), plugin);
         //getServer().getPluginManager().registerEvents(new PlayerTP(), plugin);
         /*for(Class<?> clazz : new Reflections(plugin.getClass().getPackage().getName() + ".listeners").getSubTypesOf(Listener.class) ){
             try{

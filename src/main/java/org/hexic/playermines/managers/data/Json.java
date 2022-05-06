@@ -24,6 +24,11 @@ public class Json {
             .enableComplexMapKeySerialization()
             .disableHtmlEscaping()
             .create();
+
+    /**
+     * Init the Json file
+     * @param fileName Name to fetch or create
+     */
     public Json(String fileName){
 
         file = new File( pl.getDataFolder(), fileName + ".json");
@@ -33,10 +38,14 @@ public class Json {
         }
     }
 
+    /**
+     * Add a String to the Json file without adding/creating a Json Object
+     * @param string String to be saved
+     */
     public void save(String string){
         try{
             Reader reader = Files.newBufferedReader(file.toPath()); // Read the existing Json
-            JsonArray json = GSON.fromJson(reader,JsonArray.class); // Convert the existing Json to a <ap
+            JsonArray json = GSON.fromJson(reader,JsonArray.class); // Convert the existing Json to a map
             FileWriter writer = new FileWriter(file); // Create a file writer
             JsonArray newJson = new JsonArray();
             newJson.add(string);
@@ -56,6 +65,11 @@ public class Json {
         }
     }
 
+
+    /**
+     * Create the Json file if it doesn't exist
+     * @param file File to create
+     */
     public void initFile(File file){
         try{
             FileWriter writer = new FileWriter(file);
@@ -67,7 +81,10 @@ public class Json {
         }
     }
 
-
+    /**
+     * Manually save the file
+     * @param file File to be manually saved
+     */
     public void save(File file){
         try{
             FileWriter writer = new FileWriter(file);
@@ -79,6 +96,10 @@ public class Json {
         }
     }
 
+    /**
+     * Save a whole Json Object to the Json file
+     * @param obj Object to be saved.
+     */
     public void save(JsonObject obj){
         try{
             FileWriter writer = new FileWriter(file);
@@ -90,6 +111,11 @@ public class Json {
         }
     }
 
+    /**
+     * Create an array with a "header" and "contents"
+     * @param header Name to identify the saved contents
+     * @param contents Data to be saved in the Json
+     */
     public void save(String header, JsonObject contents){
         try{
             Reader reader = Files.newBufferedReader(file.toPath()); // Read the existing Json
@@ -113,12 +139,15 @@ public class Json {
         }
     }
 
+    /**
+     * Remove a saved array/dataset
+     * @param header Name to be removed
+     */
     public void remove(String header){
         try{
             Reader reader = Files.newBufferedReader(file.toPath()); // Read the existing Json
             Map<String, JsonObject> map = GSON.fromJson(reader,Map.class); // Convert the existing Json to a map
             FileWriter writer = new FileWriter(file); // Create a file writer
-            int[] dale = new int[2];
             Map<String,JsonObject> newMap = new LinkedHashMap<>(); // Temporary map to move all the data to
             if(!map.isEmpty()){ // Check if the Json data has data.
                 for (Map.Entry<String, JsonObject> entry : map.entrySet()) { // For each dataset in the Map
@@ -136,6 +165,11 @@ public class Json {
         }
     }
 
+    /**
+     * Save a Json Object to the file
+     * @param file File to be saved to
+     * @param obj New json object to be saved
+     */
     public void save(File file, JsonObject obj){
         try{
             FileWriter writer = new FileWriter(file);
@@ -147,6 +181,10 @@ public class Json {
         }
     }
 
+    /**
+     * Fetch the Json file
+     * @return Json file
+     */
     public File getFile(){return file;
     }
 }

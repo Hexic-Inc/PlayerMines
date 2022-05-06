@@ -1,16 +1,18 @@
 package org.hexic.playermines;
 
 
+import me.drawethree.ultraprisoncore.UltraPrisonCore;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import org.hexic.playermines.init.Initializer;
-import org.hexic.playermines.world.PlayerMine;
+import org.hexic.playermines.PlayerMine.PlayerMine;
 
 import java.util.Objects;
 
 
-public class PlayerMines extends JavaPlugin {
+public class Main extends JavaPlugin {
 
     private static Initializer initializer;
 

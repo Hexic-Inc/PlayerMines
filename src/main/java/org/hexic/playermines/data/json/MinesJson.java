@@ -27,6 +27,13 @@ public class MinesJson {
         this.header = header;
     }
 
+    /**
+     * Remove the saved location.
+     */
+    public void remove(){
+        mJson.remove(header);
+    }
+
     public void setValue(String key, String value){
         pData.addProperty(key, value);
         mJson.save(header, pData);

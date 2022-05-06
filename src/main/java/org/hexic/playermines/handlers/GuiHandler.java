@@ -1,23 +1,20 @@
 package org.hexic.playermines.handlers;
 
-import me.lucko.helper.menu.Gui;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.hexic.playermines.PlayerMine.Upgrade;
 import org.hexic.playermines.data.yml.GuiConfig;
 import org.hexic.playermines.data.yml.SellPricesConfig;
-import org.hexic.playermines.world.PlayerMine;
-import org.hexic.playermines.world.Upgrade;
+import org.hexic.playermines.PlayerMine.PlayerMine;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Map;
 
 public class GuiHandler {
@@ -134,7 +131,7 @@ public class GuiHandler {
                         }
                         gui2[i] = itemStack;
                     }
-                    if (Arrays.equals(gui2, gui1) || key.toLowerCase().contains("blocks-gui")) {
+                    if (Arrays.equals(gui2, gui1)) {
                         return new GuiHandler(key, player).getGui();
                     }
                 }
@@ -188,7 +185,7 @@ public class GuiHandler {
                         lore[i] = lore[i].replace("$upgrade_cost", new PlayerMine(player).getUpgradeCost(upgrade, 1) + "");
                     }
                     if (lore[i].contains("$upgrade_currency")) {
-                        lore[i] = lore[i].replace("$upgrade_currency", new PlayerMine(player).balType(upgrade) + "");
+                        lore[i] = lore[i].replace("$upgrade_currency", new PlayerMine(player).getBalType(upgrade) + "");
                     }
                     if (lore[i].contains("$upgrade_level")) {
                         lore[i] = lore[i].replace("$upgrade_level", new PlayerMine(player).getUpgradeLevel(upgrade) + "");
