@@ -1,8 +1,11 @@
 # Commands
+
 Commands are separated into two groups, the first one being user commands, and the second being admin commands. Commands may not be issued unless the player has the permission node or have op.
 
 ##User Commands
+
 #### Usage "/pmine (subcommand) [subcommand args]"
+
 - User Commands and their required permission nodes.
   - Add [player] - **PlayerMines.Player.Add**
     - Add a player to your private mine.
@@ -21,7 +24,9 @@ Commands are separated into two groups, the first one being user commands, and t
   - Upgrade [(Upgrade)](UPGRADES.md) [level] - **PlayerMines.Player.Upgrade**
       - Upgrades a specific PlayerMine Upgrade by one level or to the specified level. 
 ##Admin Commands
+      
 #### Usage "/pmine admin (subcommand) [subcommand args]"
+
 - Admin Commands and their required permission nodes.
     - Config [config] [option] [args] - **PlayerMines.Admin.Config**
         - Useful config features ingame. **NOT SET UP CURRENTLY**

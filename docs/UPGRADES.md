@@ -1,4 +1,5 @@
 #Upgrades
+
 #### All upgrades go by the owners upgrade levels. Meaning everyone shares the same benefits at that mine.
 - Size **Disabled for the time being**
     - Increases the size of the mine by one block per direction for each level
