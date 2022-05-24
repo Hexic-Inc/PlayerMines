@@ -3,6 +3,11 @@
     <output-path>C:/PBuilds</output-path>
     <root id="archive" name="PlayerMines.jar">
       <element id="module-output" name="PlayerMines" />
+      <element id="library" level="project" name="UltraPrisonCore" />
+      <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.13.3" />
+      <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-core:2.13.3" />
+      <element id="library" level="project" name="Maven: com.fasterxml.jackson.core:jackson-annotations:2.13.3" />
+      <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.8.0-beta4" />
     </root>
   </artifact>
 </component>

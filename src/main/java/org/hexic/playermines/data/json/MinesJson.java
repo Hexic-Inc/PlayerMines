@@ -1,8 +1,7 @@
 package org.hexic.playermines.data.json;
 
-import com.google.gson.JsonObject;
-import org.bukkit.Bukkit;
-import org.hexic.playermines.managers.data.Json;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hexic.playermines.data.manager.Json;
 
 import java.io.File;
 import java.io.FileReader;
@@ -14,7 +13,7 @@ public class MinesJson {
 
     Json mJson;
     File file;
-    JsonObject pData = new JsonObject();
+    Map<String,Object> pData = new HashMap<>();
     String header;
 
     /**
@@ -35,70 +34,23 @@ public class MinesJson {
     }
 
     public void setValue(String key, String value){
-        pData.addProperty(key, value);
+        pData.put(key, value);
         mJson.save(header, pData);
     }
 
 
+
+
     public String getValue(String key){
-        try{
-            FileReader reader = new FileReader(file);
-            Map<String, ?> map = Json.GSON.fromJson(reader, Map.class);
-            reader.close();
-            String string = map.get(header).toString();
-            Map<String,String> newMap = toMap(string);
-            return newMap.get(key);
-        } catch(IOException e){
-            e.printStackTrace();
-        }
-        return "";
+       return mJson.getContents(header).get(key);
     }
 
     public boolean exists(){
-        try{
-            FileReader reader = new FileReader(file);
-            Map<String,?> map = Json.GSON.fromJson(reader, Map.class);
-            reader.close();
-            return map.containsKey(header);
-        } catch(IOException e){
-            e.printStackTrace();
-        }
-        return false;
+        return mJson.getContents().containsKey(header);
     }
 
     public boolean valueExists(String value){
-        try{
-            FileReader reader = new FileReader(file);
-            Map<String,?> map = Json.GSON.fromJson(reader, Map.class);
-            reader.close();
-            for (Map.Entry<String, ?> entry : map.entrySet()) {
-                if(entry.getValue().toString().contains(value)) {
-                    return true;
-                }
-            }
-        } catch(IOException e){
-            e.printStackTrace();
-        }
-        return false;
+        return mJson.getContents(header).containsKey(value);
     }
 
-    private Map<String,String> toMap(String convert){
-        String s = convert.replace("{", "");
-        Map<String,String> map = new HashMap<>();
-        String key = "";
-        StringBuilder temp = new StringBuilder();
-        for(int i = 0; i < s.length(); i++){
-            if (s.charAt(i) == ',' && s.charAt( i + 1) == ' ' || s.charAt(i) == '}') {
-                map.put(key, temp.toString());
-                temp = new StringBuilder();
-            } else if (s.charAt(i) == '=') {
-                key = temp.toString();
-                temp = new StringBuilder();
-            }
-            else {
-                temp.append(s.charAt(i));
-            }
-        }
-        return map;
-    }
 }

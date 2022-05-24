@@ -3,7 +3,7 @@ package org.hexic.playermines.commands.player;
 import org.bukkit.entity.Player;
 import org.hexic.playermines.Main;
 import org.hexic.playermines.data.yml.LangConfig;
-import org.hexic.playermines.managers.commands.SubCommand;
+import org.hexic.playermines.commands.manager.SubCommand;
 import org.hexic.playermines.PlayerMine.PlayerMine;
 
 public class Reset extends SubCommand {
@@ -36,6 +36,6 @@ public class Reset extends SubCommand {
 
     @Override
     public String getPermission() {
-        return "PlayerMines.Reset";
+        return "PlayerMines.Player.Reset";
     }
 }

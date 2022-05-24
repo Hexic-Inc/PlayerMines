@@ -1,7 +1,5 @@
 package org.hexic.playermines;
 
-
-import me.drawethree.ultraprisoncore.UltraPrisonCore;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -28,6 +26,7 @@ public class Main extends JavaPlugin {
         if(PlayerMine.getMineWorld() != null){
             Objects.requireNonNull(Bukkit.getWorld(PlayerMine.getMineWorld().getName())).save();
         }
+        initializer.getSchematicHandler().cleanUp();
 
     }
 

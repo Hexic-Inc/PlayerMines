@@ -1,10 +1,9 @@
 package org.hexic.playermines.init;
 
-import me.drawethree.ultraprisoncore.UltraPrisonCore;
+import dev.drawethree.ultraprisoncore.UltraPrisonCore;
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.permission.Permission;
 import org.bukkit.Bukkit;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.hexic.playermines.data.yml.GuiConfig;
@@ -13,14 +12,12 @@ import org.hexic.playermines.data.yml.SellPricesConfig;
 import org.hexic.playermines.data.yml.YmlConfig;
 import org.hexic.playermines.handlers.CoolDownHandler;
 import org.hexic.playermines.handlers.MenuHandler;
+import org.hexic.playermines.handlers.SchematicHandler;
 import org.hexic.playermines.listeners.*;
-import org.hexic.playermines.managers.commands.CommandManager;
-import org.hexic.playermines.managers.data.DataManager;
+import org.hexic.playermines.commands.manager.CommandManager;
+import org.hexic.playermines.data.manager.DataManager;
 import org.hexic.playermines.PlayerMine.PlayerMine;
 
-
-import java.awt.*;
-import java.util.Objects;
 
 import static org.bukkit.Bukkit.getServer;
 
@@ -32,14 +29,19 @@ public class Initializer {
     private static Permission perms = null;
     private CoolDownHandler coolDownHandler;
     private MenuHandler menuHandler;
+    private SchematicHandler schematicHandler;
 
 
     public Initializer(JavaPlugin plugin){
         this.plugin = plugin;
         this.dataManager = new DataManager(this.plugin);
-        //In order for Autosell regions to work properly, they must be reloaded when the plugin starts
-        UltraPrisonCore.getInstance().getAutoSell().reload();
+        //In order for Autosell regions to work properly, they must be reloaded when the plugin starts. Wait 5 seconds after plugin start to reload Autosell Regions.
+        Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () ->{
+            UltraPrisonCore.getInstance().getAutoSell().reload();
+                }, 100);
     }
+
+    public SchematicHandler getSchematicHandler(){return schematicHandler;}
 
     public DataManager getDataManager(){return dataManager;}
 
@@ -58,12 +60,21 @@ public class Initializer {
         initMenuHandler();
         initListeners();
         initCommands();
-        loadCoolDownHandler();
+        initCoolDownHandler();
         initWorld();
+        initSchematicHandler();
     }
 
-    public void loadCoolDownHandler(){
+    public JavaPlugin getPlugin(){
+        return plugin;
+    }
+
+    private void initCoolDownHandler(){
         coolDownHandler = new CoolDownHandler(plugin);
+    }
+
+    private void initSchematicHandler(){
+        schematicHandler = new SchematicHandler();
     }
 
     private void initWorld(){
@@ -72,9 +83,6 @@ public class Initializer {
         }
     }
 
-    public JavaPlugin getPlugin(){
-        return plugin;
-    }
 
     private void initListeners(){
         getServer().getPluginManager().registerEvents(new MineReset(),plugin);

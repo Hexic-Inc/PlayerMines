@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="UltraPrisonCore">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/../PrisonCoreV2/UltraPrisonCore/target/UltraPrisonCore.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

@@ -2,10 +2,9 @@ package org.hexic.playermines.commands.admin;
 
 import org.bukkit.entity.Player;
 import org.hexic.playermines.PlayerMine.PlayerMine;
-import org.hexic.playermines.managers.commands.SubCommand;
-import scala.concurrent.impl.FutureConvertersImpl;
+import org.hexic.playermines.commands.manager.SubCommand;
 
-public class delete extends SubCommand {
+public class Delete extends SubCommand {
     @Override
     public String getName() {
         return "Delete";

@@ -1,9 +1,9 @@
 package org.hexic.playermines.handlers;
 
-import me.drawethree.ultraprisoncore.UltraPrisonCore;
-import me.drawethree.ultraprisoncore.api.enums.ReceiveCause;
-import me.drawethree.ultraprisoncore.gems.api.UltraPrisonGemsAPI;
-import me.drawethree.ultraprisoncore.tokens.api.UltraPrisonTokensAPI;
+import dev.drawethree.ultraprisoncore.UltraPrisonCore;
+import dev.drawethree.ultraprisoncore.api.enums.ReceiveCause;
+import dev.drawethree.ultraprisoncore.gems.api.UltraPrisonGemsAPI;
+import dev.drawethree.ultraprisoncore.tokens.api.UltraPrisonTokensAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

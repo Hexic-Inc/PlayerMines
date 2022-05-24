@@ -2,12 +2,11 @@ package org.hexic.playermines.data.yml;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.checkerframework.checker.units.qual.A;
 import org.hexic.playermines.Main;
 import org.hexic.playermines.PlayerMine.PlayerMine;
-import org.hexic.playermines.PlayerMine.Upgrade;
+import org.hexic.playermines.PlayerMine.SubClasses.Upgrade;
 import org.hexic.playermines.data.PlaceHolder;
-import org.hexic.playermines.managers.data.Config;
+import org.hexic.playermines.data.manager.Config;
 
 import java.util.ArrayList;
 
@@ -34,19 +33,19 @@ public class LangConfig {
 
     /**
      * Manually Replace an Arraylist of PlaceHolder's, to the replacement ArrayList.
-     * @param rawMessage Message that contains the placeholder.
+     * @param defaultValue Message that contains the placeholder.
      * @param placeHolders PlaceHolders that will be replaced in rawMessage.
      * @param replacements Replacements that will take the same spot as the placeholder. Defaults to normal placeholder replacements if null/none provided.
      * @return Replaced string with all replaced placeholders.
      */
-    public String manualPlHolReplace(String rawMessage, ArrayList<PlaceHolder> placeHolders, ArrayList<String> replacements){
-        String newMessage = rawMessage;
+    public String manualPlHolReplace(String section, String key, String defaultValue, ArrayList<PlaceHolder> placeHolders, ArrayList<String> replacements){
+        String newMessage = defaultValue;
         for(int i = 0; i < placeHolders.size(); i++){
-            if(rawMessage.contains(placeHolders.get(i).toString().toLowerCase())){
+            if(defaultValue.contains(placeHolders.get(i).toString().toLowerCase())){
                 if(replacements.size() < i || replacements.get(i).equals("") || replacements.get(i).isEmpty()){
-                    newMessage = replacePlaceHolder(newMessage);
+                    newMessage = getValue(section,key,replacePlaceHolder(newMessage));
                 } else {
-                    newMessage = newMessage.replace(placeHolders.get(i).toString().toLowerCase(), replacements.get(i));
+                    newMessage = getValue(section,key,newMessage.replace(placeHolders.get(i).toString().toLowerCase(), replacements.get(i)));
                 }
             }
         }
@@ -54,20 +53,35 @@ public class LangConfig {
     }
 
     /**
+     * Manually Replace an Arraylist of PlaceHolder's, to the replacement ArrayList.
+     * @param defaultValue Message that contains the placeholder.
+     * @param placeHolder PlaceHolder that will be replaced in rawMessage.
+     * @param replacement Replacement that will take the same spot as the placeholder. Defaults to normal placeholder replacements if null/none provided.
+     * @return Replaced string with all replaced placeholders.
+     */
+    public String manualStringReplacePrefix(String section, String key, String defaultValue, String placeHolder, String replacement){
+        String newMessage = getValue(section,key,defaultValue);
+        if(newMessage.contains(placeHolder)){
+            newMessage.replace(placeHolder,replacement);
+        }
+        return getPrefix() + newMessage;
+    }
+
+    /**
      * Manually Replace an Arraylist of placeholders as strings, to the replacement arraylist.
-     * @param rawMessage Message that contains the placeholder.
+     * @param defaultValue Message that contains the placeholder.
      * @param placeHolders Placeholders that will be replaced in rawMessage.
      * @param replacements Replacements that will take the same spot as the placeholder. Defaults to normal placeholder replacements if null/none provided.
      * @return Replaced string with all replaced placeholders.
      */
-    public String manualStringReplace(String rawMessage, ArrayList<String> placeHolders, ArrayList<String> replacements){
-        String newMessage = rawMessage;
+    public String manualStringReplace(String section, String key, String defaultValue, ArrayList<String> placeHolders, ArrayList<String> replacements){
+        String newMessage = defaultValue;
         for(int i = 0; i < placeHolders.size(); i++){
-            if(rawMessage.contains(placeHolders.get(i).toLowerCase())){
+            if(defaultValue.contains(placeHolders.get(i).toLowerCase())){
                 if(replacements.size() < i || replacements.get(i).equals("") || replacements.get(i).isEmpty()){
-                    newMessage = replacePlaceHolder(newMessage);
+                    newMessage = getValue(section,key,replacePlaceHolder(newMessage));
                 } else {
-                    newMessage = newMessage.replace(placeHolders.get(i).toLowerCase(), replacements.get(i));
+                    newMessage = getValue(section,key,newMessage.replace(placeHolders.get(i).toString().toLowerCase(), replacements.get(i)));
                 }
             }
         }

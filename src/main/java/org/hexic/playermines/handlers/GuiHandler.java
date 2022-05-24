@@ -8,7 +8,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.hexic.playermines.PlayerMine.Upgrade;
+import org.hexic.playermines.PlayerMine.SubClasses.Upgrade;
 import org.hexic.playermines.data.yml.GuiConfig;
 import org.hexic.playermines.data.yml.SellPricesConfig;
 import org.hexic.playermines.PlayerMine.PlayerMine;

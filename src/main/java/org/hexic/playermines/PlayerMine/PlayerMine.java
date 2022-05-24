@@ -2,6 +2,7 @@ package org.hexic.playermines.PlayerMine;
 
 import com.github.yannicklamprecht.worldborder.api.BorderAPI;
 import com.github.yannicklamprecht.worldborder.api.WorldBorderApi;
+
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.WorldEditException;
@@ -15,7 +16,7 @@ import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.session.ClipboardHolder;
 
-import me.drawethree.ultraprisoncore.UltraPrisonCore;
+
 import me.jet315.prisonmines.JetsPrisonMinesAPI;
 
 import me.jet315.prisonmines.mine.Mine;
@@ -23,23 +24,26 @@ import me.jet315.prisonmines.mine.blocks.MineBlock;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.hexic.playermines.Main;
+import org.hexic.playermines.PlayerMine.SubClasses.*;
 import org.hexic.playermines.data.json.MinesJson;
 import org.hexic.playermines.data.json.PlayerJson;
 import org.hexic.playermines.data.yml.YmlConfig;
 import org.hexic.playermines.world.EmptyChunkGenerator;
 
+import javax.xml.crypto.dsig.Transform;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
+
 
 
 public class PlayerMine {
 
     private String uuid;
-    private final JetsPrisonMinesAPI jetsPrisonMinesAPI = UltraPrisonCore.getInstance().getJetsPrisonMinesAPI();
+    private final JetsPrisonMinesAPI jetsPrisonMinesAPI = new JetsPrisonMinesAPI();
     private final YmlConfig config = new YmlConfig();
     private final OfflinePlayer ownerPlayer;
     private final PlayerJson ownerJson;
@@ -51,6 +55,7 @@ public class PlayerMine {
     private final Regions regions;
     private final PrisonMine prisonMine;
     private final Upgrades upgrades;
+    private final Owner owner;
 
 
 
@@ -76,6 +81,7 @@ public class PlayerMine {
         this.regions = new Regions(mineName);
         this.prisonMine = new PrisonMine(ownerPlayer, regions);
         this.upgrades = new Upgrades(ownerPlayer);
+        this.owner = new Owner(ownerPlayer);
     }
 
     /**
@@ -94,6 +100,7 @@ public class PlayerMine {
         this.regions = new Regions(mineName);
         this.prisonMine = new PrisonMine(ownerPlayer, regions);
         this.upgrades = new Upgrades(ownerPlayer);
+        this.owner = new Owner(ownerPlayer);
     }
 
     /**
@@ -112,6 +119,7 @@ public class PlayerMine {
         this.regions = new Regions(mineName);
         this.prisonMine = new PrisonMine(ownerPlayer, regions);
         this.upgrades = new Upgrades(ownerPlayer);
+        this.owner = new Owner(ownerPlayer);
     }
 
     /**
@@ -130,6 +138,7 @@ public class PlayerMine {
         this.regions = new Regions(mineName);
         this.prisonMine = new PrisonMine(ownerPlayer, regions);
         this.upgrades = new Upgrades(ownerPlayer);
+        this.owner = new Owner(ownerPlayer);
 
     }
 
@@ -140,6 +149,68 @@ public class PlayerMine {
         new MinesJson(JsonLocation.jsonLocation(getTeleportLocation())).remove();
         ownerJson.remove();
     }
+
+    /**
+     * Check to see if a player is a member of the mine.
+     * @param player Player to check
+     * @return If the player is a member of the mine
+     */
+    public boolean isPlayerAdded(OfflinePlayer player){
+        for(int i = 0; i < owner.getMembers().length; i++){
+            if(owner.getMembers()[i].contains(player.getUniqueId().toString())){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Get the added members of the PlayerMine
+     * @return Added members
+     */
+    public String[] getMembers(){return owner.getMembers();}
+
+    /**
+     * Add a player to the Members list
+     * @param player Player to be added
+     */
+    public void addPlayer(OfflinePlayer player){
+        owner.addPlayer(player);
+    }
+
+    /**
+     * Get the max amount of members allowed at that mine.
+     * @return Max members allowed.
+     */
+    public int getMemberCap(){
+        return owner.getMemberCap();
+    }
+
+    /**
+     * Check to see if the Players mine is public
+     * @return If the mine is public or not
+     */
+    public boolean isPublic(){
+        return owner.isPublic();
+    }
+
+    public void setPublic(Boolean setPublic){
+
+    }
+
+    /**
+     * Create the mine and all the associated data needed for that player instance.
+     * @return Returns true if created instantly, false if there's a queue.
+     */
+    public boolean createMine(){
+        owner.createPlayerData();
+        new MinesJson(ownerJson.getValue("Location")).setValue("Owner",uuid);
+        prisonMine.createPrisonMine(getTeleportLocation());
+        regions.createMineRegion();
+        prisonMine.createAutoSellRegion();
+        return Main.getInitalizer().getSchematicHandler().pastePlayersSchematic(ownerPlayer);
+    }
+
 
     // Upgrades Section
 
@@ -338,6 +409,14 @@ public class PlayerMine {
         setBorder(player);
     }
 
+    /**
+     * Get the Location that PlayerMines get by default
+     * @return Minecraft Location of bottom right corner of mine.
+     */
+    public Location getRawMineLocation(){
+        return jsonLocation.mineLocation();
+    }
+
 
     /**
      * Get the location that players should be teleported to.
@@ -355,10 +434,9 @@ public class PlayerMine {
 
     /**
      * Get the list of players at the mine.
-     * @param mineName Name of the mine. Usually the UUID of the owner of the mine.
      * @return All the players that are currently mining at the mine.
      */
-    public List<Player> playersAtMine(String mineName){
+    public List<Player> playersAtMine(){
             List<Player> playersAtMine = new ArrayList<>();
             List<Player> players = Objects.requireNonNull(Bukkit.getWorld(config.getWorldName())).getPlayers();
             for (Player player : players) {
@@ -380,6 +458,16 @@ public class PlayerMine {
 
 
     /**
+     * Remove a border from the player.
+     * @param player Player to remove the border from.
+     */
+    public void removeBorder(Player player){
+        WorldBorderApi worldBorderApi = BorderAPI.getApi();
+        worldBorderApi.resetWorldBorderToGlobal(player);
+    }
+
+
+    /**
      * Get the world that the player mines are in.
      * @return Bukkit world representation of the world.
      */
@@ -390,43 +478,6 @@ public class PlayerMine {
         return null;
     }
 
-    /**
-     * Create the Json data for the player.
-     */
-    private void createPlayerData(){
-        ownerJson.setValue("Location",jsonLocation.getAvailableLocation());
-        Map<String,String> data = ownerJson.getData();
-        data.put("Size", "0");
-        data.put("Regen_Time", "0");
-        data.put("Mine_Multiplier", "0");
-        data.put("EToken_Finder",  "0");
-        data.put("Tax_Price", "0");
-        data.put("Rent_Price",  "0");
-        data.put("MineCrate_Finder", "0");
-        data.put("Upgrade_Finder", "0");
-        data.put("Berserk",  "0");
-        data.put("Gem_Drops", "0");
-        data.put("Added_Members","");
-        data.put("Berserk_Count", "0");
-        data.put("Public", "false");
-        data.put("Mine-Contents", config.getPmineContents());
-        data.put("Mine-Size", config.getMineCords());
-        data.put("TP-Location", config.getTPLocation());
-        ownerJson.setValue(data);
-    }
-
-
-    /**
-     * Create the mine and all the associated data needed for that player instance.
-     */
-    public void createMine(){
-        createPlayerData();
-        createMineData();
-        prisonMine.createPrisonMine(getTeleportLocation());
-        regions.createMineRegion();
-        prisonMine.createAutoSellRegion();
-        loadAndPaste();
-    }
 
 
     /**
@@ -436,15 +487,6 @@ public class PlayerMine {
         teleport(Objects.requireNonNull(ownerPlayer.getPlayer()));
         jetsPrisonMinesAPI.getMineByName(mineName).reset(true);
     }
-
-    /**
-     * Create Mine Data to track each player's Mine Location.
-     */
-    private void createMineData(){
-        MinesJson mData = new MinesJson(ownerJson.getValue("Location"));
-        mData.setValue("Owner",uuid);
-    }
-
 
 
     /**
@@ -458,46 +500,6 @@ public class PlayerMine {
     }
 
 
-    /**
-     * Load and paste the Player Mine schematic. Opens a new thread to do this.
-     */
-    private void loadAndPaste(){
-        //Load and paste the schematic on a separate thread.
-        new BukkitRunnable(){
-            @Override
-            public void run() {
-                Location areaLocation = jsonLocation.mineLocation();
-                Clipboard clipboard;
-                File file = new File(Main.getInitalizer().getDataManager().getFolder(), "/" + config.getDefaultSchem() + ".schem");
-                ClipboardFormat format = ClipboardFormats.findByFile(file);
-                try (ClipboardReader reader = format.getReader(new FileInputStream(file))) {
-                    clipboard = reader.read();
-                    pasteSchematic(areaLocation,clipboard);
-                } catch (IOException e){
-                    e.printStackTrace();
-                }
-            }
-        }.runTask(Main.getInitalizer().getPlugin());
-    }
-
-    /**
-     * Paste the loaded schematic.
-     * @param location Location to paste the schematic.
-     * @param clipboard Schematic copied to the clipboard.
-     */
-    private void pasteSchematic(Location location, Clipboard clipboard){
-        World world = getMineWorld();
-        com.sk89q.worldedit.world.World adaptedWorld = BukkitAdapter.adapt(world);
-        try (EditSession editSession = WorldEdit.getInstance().newEditSession(adaptedWorld)) {
-            Operation operation = new ClipboardHolder(clipboard)
-                    .createPaste(editSession)
-                    .to(BlockVector3.at(location.getX(), location.getY(), location.getZ()))
-                    .build();
-            Operations.complete(operation);
-        } catch (WorldEditException e) {
-            e.printStackTrace();
-        }
-    }
 
     /**
      * Get the border length for each Player Mine.

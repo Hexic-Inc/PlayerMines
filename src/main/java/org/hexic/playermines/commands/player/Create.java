@@ -2,7 +2,7 @@ package org.hexic.playermines.commands.player;
 
 import org.bukkit.entity.Player;
 import org.hexic.playermines.data.yml.LangConfig;
-import org.hexic.playermines.managers.commands.SubCommand;
+import org.hexic.playermines.commands.manager.SubCommand;
 import org.hexic.playermines.PlayerMine.PlayerMine;
 
 public class Create extends SubCommand {
@@ -24,12 +24,13 @@ public class Create extends SubCommand {
             player.sendMessage(lang.getPrefixValue(getName(), "Mine_Exists", "&cYou already own a mine!"));
             return;
         }
-        pMine.createMine();
-        player.sendMessage(lang.getPrefixValue(getName(), "Mine_Created", "&cYour mine has been created!"));
+        if(!pMine.createMine()){
+            player.sendMessage(lang.getPrefixValue(getName(), "Mine_Queue", "&cPlease wait while we make your mine."));
+        }
     }
 
     @Override
     public String getPermission() {
-        return "PlayerMines.Create";
+        return "PlayerMines.Player.Create";
     }
 }

@@ -13,7 +13,7 @@ public class EmptyChunkGenerator extends ChunkGenerator {
     public ChunkData generateChunkData(World world, Random random, int chunkX, int chunkZ, BiomeGrid biome) {
         ChunkData chunkData = super.createChunkData(world);
 
-        // For everyblock in the chunk set the biome to plains
+        // For every block in the chunk set the biome to plains
         for(int x = 0; x < 16; x++) {
             for(int z = 0; z < 16; z++) {
                 biome.setBiome(x, z, Biome.PLAINS);

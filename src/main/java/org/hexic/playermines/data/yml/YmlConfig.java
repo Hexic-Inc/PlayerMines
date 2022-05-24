@@ -2,7 +2,7 @@ package org.hexic.playermines.data.yml;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.hexic.playermines.Main;
-import org.hexic.playermines.managers.data.Config;
+import org.hexic.playermines.data.manager.Config;
 
 import java.util.HashMap;
 import java.util.Map;

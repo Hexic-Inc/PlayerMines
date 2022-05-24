@@ -2,7 +2,7 @@ package org.hexic.playermines.data.yml;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.hexic.playermines.Main;
-import org.hexic.playermines.managers.data.Config;
+import org.hexic.playermines.data.manager.Config;
 
 import java.util.Set;
 
@@ -236,7 +236,7 @@ public class GuiConfig {
         config.createSection(section);
         config.setListValue(section, "Item", "emerald");
         config.setListValue(section, "Display_Name", "&cGem Dropper");
-        config.setListValue(section, "Lore", "&6Find gems when the mine resets.;&c$upgrade_level / $upgrade_max; &cCost $upgrade_cost $upgrade_currency");
+        config.setListValue(section, "Lore", "&6Find gems when the mine resets.;&c$upgrade_level / $upgrade_max; &cCost $upgrade_cost $upgrade_currencyuu");
         config.setListValue(section, "Action", "upgrade;gem_drops");
     }
 

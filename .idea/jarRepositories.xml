@@ -32,6 +32,11 @@
       <option name="url" value="https://packagecloud.io/Siiant/Hexic/maven2" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="sk89q-repo" />
+      <option name="name" value="sk89q-repo" />
+      <option name="url" value="https://maven.enginehub.org/repo/" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="repsy" />
       <option name="name" value="com.hexic.worldborder" />
       <option name="url" value="https://repo.repsy.io/mvn/siiant/worldborder" />

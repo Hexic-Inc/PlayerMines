@@ -1,18 +1,17 @@
 package org.hexic.playermines.handlers;
 
-import me.drawethree.ultraprisoncore.UltraPrisonCore;
+import dev.drawethree.ultraprisoncore.UltraPrisonCore;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.hexic.playermines.Main;
-import org.hexic.playermines.PlayerMine.Upgrade;
+import org.hexic.playermines.PlayerMine.SubClasses.Upgrade;
 import org.hexic.playermines.data.yml.LangConfig;
 import org.hexic.playermines.data.yml.SellPricesConfig;
 import org.hexic.playermines.PlayerMine.PlayerMine;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;

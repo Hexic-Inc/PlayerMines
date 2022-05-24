@@ -12,7 +12,7 @@ public class MineReset implements Listener {
     public void preReset(MinePreResetEvent e){
         if(e.getMine().getMineRegion().getWorld() == PlayerMine.getMineWorld()) {
             PlayerMine playerMine = new PlayerMine(PlayerMine.mineOwner(e.getMine().getMineRegion().getMinPoint()));
-            for (Player player : playerMine.playersAtMine(e.getMine().getCustomName())) {
+            for (Player player : playerMine.playersAtMine()) {
                 playerMine.runUpgrades(player);
             }
         }
